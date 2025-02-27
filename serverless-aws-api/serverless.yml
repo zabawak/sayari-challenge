@@ -4,6 +4,7 @@ provider:
   name: aws
   runtime: nodejs18.x
   region: us-east-1
+  deploymentMethod: direct
   environment:
     DB_HOST: !GetAtt PostgresRDSInstance.Endpoint.Address
     DB_PORT: !GetAtt PostgresRDSInstance.Endpoint.Port
@@ -31,110 +32,307 @@ custom:
     api:
       info:
         version: '1.0.0'
-        title: 'Serverless AWS API'
-        description: 'REST API for resource management'
+        title: 'Stack Overfaux API'
+        description: 'REST API for Stack Overfaux platform'
         contact:
           name: 'API Support'
           url: 'https://www.example.com/support'
           email: 'support@example.com'
     models:
-      - name: 'ResourceModel'
+      - name: 'UserModel'
         contentType: 'application/json'
         schema:
           type: 'object'
           properties:
             id:
-              type: 'string'
+              type: 'integer'
             name:
               type: 'string'
-            description:
+      - name: 'QuestionModel'
+        contentType: 'application/json'
+        schema:
+          type: 'object'
+          properties:
+            id:
+              type: 'integer'
+            title:
               type: 'string'
-            createdAt:
+            body:
+              type: 'string'
+            user_id:
+              type: 'integer'
+            user_name:
+              type: 'string'
+            created_at:
+              type: 'string'
+              format: 'date-time'
+            score:
+              type: 'integer'
+      - name: 'AnswerModel'
+        contentType: 'application/json'
+        schema:
+          type: 'object'
+          properties:
+            id:
+              type: 'integer'
+            body:
+              type: 'string'
+            user_id:
+              type: 'integer'
+            user_name:
+              type: 'string'
+            parent_question_id:
+              type: 'integer'
+            created_at:
+              type: 'string'
+              format: 'date-time'
+            score:
+              type: 'integer'
+            accepted:
+              type: 'boolean'
+      - name: 'CommentModel'
+        contentType: 'application/json'
+        schema:
+          type: 'object'
+          properties:
+            id:
+              type: 'integer'
+            body:
+              type: 'string'
+            user_id:
+              type: 'integer'
+            user_name:
+              type: 'string'
+            parent_question_id:
+              type: 'integer'
+            parent_answer_id:
+              type: 'integer'
+            created_at:
               type: 'string'
               format: 'date-time'
 
 functions:
-  create:
-    handler: src/functions/create.createHandler
+  # User functions
+  getAllUsers:
+    handler: lambda/index.handler
     events:
       - http:
-          path: resources
+          path: users
+          method: get
+          documentation:
+            summary: 'Get all users'
+            description: 'Returns all registered users'
+            methodResponses:
+              - statusCode: 200
+                responseModels:
+                  'application/json': 'UserModel'
+
+  createUser:
+    handler: lambda/index.handler
+    events:
+      - http:
+          path: users/{name}
           method: post
           documentation:
-            summary: 'Create a new resource'
-            description: 'Creates a new resource with the provided data'
-            requestModels:
-              'application/json': 'ResourceModel'
+            summary: 'Create new user'
+            description: 'Creates a new user with the specified name'
+            pathParams:
+              - name: 'name'
+                description: 'Username to create'
             methodResponses:
               - statusCode: 201
                 responseModels:
-                  'application/json': 'ResourceModel'
+                  'application/json': 'UserModel'
 
-  delete:
-    handler: src/functions/delete.deleteHandler
+  getUserByName:
+    handler: lambda/index.handler
     events:
       - http:
-          path: resources/{id}
-          method: delete
-          documentation:
-            summary: 'Delete resource'
-            description: 'Deletes a resource with the specified ID'
-            pathParams:
-              - name: 'id'
-                description: 'ID of the resource to delete'
-            methodResponses:
-              - statusCode: 204
-                description: 'Resource successfully deleted'
-
-  get:
-    handler: src/functions/get.getHandler
-    events:
-      - http:
-          path: resources/{id}
+          path: users/{name}
           method: get
           documentation:
-            summary: 'Get resource'
-            description: 'Gets a resource with the specified ID'
+            summary: 'Get user by name'
+            description: 'Retrieves a user by their username'
             pathParams:
-              - name: 'id'
-                description: 'ID of the resource to retrieve'
+              - name: 'name'
+                description: 'Username to look up'
             methodResponses:
               - statusCode: 200
                 responseModels:
-                  'application/json': 'ResourceModel'
+                  'application/json': 'UserModel'
 
-  list:
-    handler: src/functions/list.listHandler
+  # Question functions
+  getAllQuestions:
+    handler: lambda/index.handler
     events:
       - http:
-          path: resources
+          path: questions
           method: get
           documentation:
-            summary: 'List resources'
-            description: 'Lists all available resources'
+            summary: 'Get all questions'
+            description: 'Returns all questions'
             methodResponses:
               - statusCode: 200
                 responseModels:
-                  'application/json': 'ResourceModel'
+                  'application/json': 'QuestionModel'
 
-  update:
-    handler: src/functions/update.updateHandler
+  createQuestion:
+    handler: lambda/index.handler
     events:
       - http:
-          path: resources/{id}
-          method: put
+          path: questions
+          method: post
           documentation:
-            summary: 'Update resource'
-            description: 'Updates a resource with the specified ID'
-            pathParams:
-              - name: 'id'
-                description: 'ID of the resource to update'
+            summary: 'Create new question'
+            description: 'Creates a new question'
             requestModels:
-              'application/json': 'ResourceModel'
+              'application/json': 'QuestionModel'
+            methodResponses:
+              - statusCode: 201
+                responseModels:
+                  'application/json': 'QuestionModel'
+
+  getQuestionById:
+    handler: lambda/index.handler
+    events:
+      - http:
+          path: questions/{id}
+          method: get
+          documentation:
+            summary: 'Get question by ID'
+            description: 'Retrieves a question by its ID'
+            pathParams:
+              - name: 'id'
+                description: 'ID of the question'
             methodResponses:
               - statusCode: 200
                 responseModels:
-                  'application/json': 'ResourceModel'
+                  'application/json': 'QuestionModel'
+
+  getQuestionsByUser:
+    handler: lambda/index.handler
+    events:
+      - http:
+          path: questions/{user}
+          method: get
+          documentation:
+            summary: 'Get questions by username'
+            description: 'Retrieves all questions by a specific user'
+            pathParams:
+              - name: 'user'
+                description: 'Username to filter by'
+            methodResponses:
+              - statusCode: 200
+                responseModels:
+                  'application/json': 'QuestionModel'
+
+  # Answer functions
+  getAnswersByUser:
+    handler: lambda/index.handler
+    events:
+      - http:
+          path: answers/{user}
+          method: get
+          documentation:
+            summary: 'Get answers by username'
+            description: 'Retrieves all answers by a specific user'
+            pathParams:
+              - name: 'user'
+                description: 'Username to filter by'
+            methodResponses:
+              - statusCode: 200
+                responseModels:
+                  'application/json': 'AnswerModel'
+
+  getAnswersByQuestion:
+    handler: lambda/index.handler
+    events:
+      - http:
+          path: answers/{question}
+          method: get
+          documentation:
+            summary: 'Get answers by question'
+            description: 'Retrieves all answers to a specific question'
+            pathParams:
+              - name: 'question'
+                description: 'Question ID to filter by'
+            methodResponses:
+              - statusCode: 200
+                responseModels:
+                  'application/json': 'AnswerModel'
+
+  createAnswer:
+    handler: lambda/index.handler
+    events:
+      - http:
+          path: answers/{question}
+          method: post
+          documentation:
+            summary: 'Create new answer'
+            description: 'Creates a new answer for a specific question'
+            pathParams:
+              - name: 'question'
+                description: 'Question ID to answer'
+            requestModels:
+              'application/json': 'AnswerModel'
+            methodResponses:
+              - statusCode: 201
+                responseModels:
+                  'application/json': 'AnswerModel'
+
+  # Comment functions
+  getCommentsByParent:
+    handler: lambda/index.handler
+    events:
+      - http:
+          path: comments/{parent}
+          method: get
+          documentation:
+            summary: 'Get comments by parent'
+            description: 'Retrieves all comments for a question or answer'
+            pathParams:
+              - name: 'parent'
+                description: 'Parent ID (question or answer)'
+            methodResponses:
+              - statusCode: 200
+                responseModels:
+                  'application/json': 'CommentModel'
+
+  createComment:
+    handler: lambda/index.handler
+    events:
+      - http:
+          path: comments/{parent}
+          method: post
+          documentation:
+            summary: 'Create new comment'
+            description: 'Creates a new comment for a question or answer'
+            pathParams:
+              - name: 'parent'
+                description: 'Parent ID (question or answer)'
+            requestModels:
+              'application/json': 'CommentModel'
+            methodResponses:
+              - statusCode: 201
+                responseModels:
+                  'application/json': 'CommentModel'
+
+  getCommentsByUser:
+    handler: lambda/index.handler
+    events:
+      - http:
+          path: comments/{user}
+          method: get
+          documentation:
+            summary: 'Get comments by user'
+            description: 'Retrieves all comments by a specific user'
+            pathParams:
+              - name: 'user'
+                description: 'Username to filter by'
+            methodResponses:
+              - statusCode: 200
+                responseModels:
+                  'application/json': 'CommentModel'
 
 resources:
   Resources:
@@ -237,158 +435,432 @@ resources:
         RouteTableId: !Ref PublicRouteTable
 
     # API Gateway with Swagger UI
-    ApiGatewayRestApi:
-      Type: AWS::ApiGateway::RestApi
-      Properties:
-        Name: serverless-aws-api
-        Description: API for managing resources
-        EndpointConfiguration:
-          Types:
-            - REGIONAL
-        Body:
-          swagger: '2.0'
-          info:
-            version: '1.0.0'
-            title: Serverless AWS API
-            description: REST API for resource management
-          basePath: /${opt:stage, 'dev'}
-          schemes:
-            - https
-          consumes:
-            - application/json
-          produces:
-            - application/json
-          paths:
-            /resources:
-              get:
-                summary: List resources
-                description: Lists all available resources
-                responses:
-                  200:
-                    description: Successful response
-                    schema:
-                      type: array
-                      items:
-                        $ref: '#/definitions/Resource'
-              post:
-                summary: Create a new resource
-                description: Creates a new resource with the provided data
-                parameters:
-                  - in: body
-                    name: resourceData
-                    description: Resource object to create
-                    required: true
-                    schema:
-                      $ref: '#/definitions/ResourceInput'
-                responses:
-                  201:
-                    description: Resource created
-                    schema:
-                      $ref: '#/definitions/Resource'
-            /resources/{id}:
-              get:
-                summary: Get resource
-                description: Gets a resource with the specified ID
-                parameters:
-                  - name: id
-                    in: path
-                    description: ID of the resource to retrieve
-                    required: true
-                    type: string
-                responses:
-                  200:
-                    description: Successful response
-                    schema:
-                      $ref: '#/definitions/Resource'
-                  404:
-                    description: Resource not found
-              put:
-                summary: Update resource
-                description: Updates a resource with the specified ID
-                parameters:
-                  - name: id
-                    in: path
-                    description: ID of the resource to update
-                    required: true
-                    type: string
-                  - in: body
-                    name: resourceData
-                    description: Resource object to update
-                    required: true
-                    schema:
-                      $ref: '#/definitions/ResourceInput'
-                responses:
-                  200:
-                    description: Resource updated
-                    schema:
-                      $ref: '#/definitions/Resource'
-                  404:
-                    description: Resource not found
-              delete:
-                summary: Delete resource
-                description: Deletes a resource with the specified ID
-                parameters:
-                  - name: id
-                    in: path
-                    description: ID of the resource to delete
-                    required: true
-                    type: string
-                responses:
-                  204:
-                    description: Resource successfully deleted
-                  404:
-                    description: Resource not found
-          definitions:
-            Resource:
-              type: object
-              properties:
-                id:
-                  type: string
-                name:
-                  type: string
-                description:
-                  type: string
-                createdAt:
-                  type: string
-                  format: date-time
-            ResourceInput:
-              type: object
-              required:
-                - name
-              properties:
-                name:
-                  type: string
-                description:
-                  type: string
-          x-amazon-apigateway-binary-media-types:
-            - 'application/json'
-          x-amazon-apigateway-gateway-responses:
-            DEFAULT_4XX:
-              responseParameters:
-                gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
-            DEFAULT_5XX:
-              responseParameters:
-                gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+    # ApiGatewayRestApi:
+    #   Type: AWS::ApiGateway::RestApi
+    #   Properties:
+    #     Name: stack-overfaux-api
+    #     Description: API for Stack Overfaux platform
+    #     EndpointConfiguration:
+    #       Types:
+    #         - REGIONAL
+    #     Body:
+    #       swagger: '2.0'
+    #       info:
+    #         version: '1.0.0'
+    #         title: Stack Overfaux API
+    #         description: REST API for Stack Overfaux platform
+    #       basePath: /${opt:stage, 'dev'}
+    #       schemes:
+    #         - https
+    #       consumes:
+    #         - application/json
+    #       produces:
+    #         - application/json
+    #       paths:
+    #         /users:
+    #           get:
+    #             summary: Get all users
+    #             description: Returns all registered users
+    #             responses:
+    #               200:
+    #                 description: Successful response
+    #                 schema:
+    #                   type: array
+    #                   items:
+    #                     $ref: '#/definitions/User'
+    #             x-amazon-apigateway-integration:
+    #               uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getAllUsers.Arn}/invocations"
+    #               passthroughBehavior: when_no_match
+    #               httpMethod: POST
+    #               type: aws_proxy
+    #         /users/{name}:
+    #           parameters:
+    #             - name: name
+    #               in: path
+    #               required: true
+    #               type: string
+    #           get:
+    #             summary: Get user by name
+    #             description: Retrieves a user by their username
+    #             responses:
+    #               200:
+    #                 description: Successful response
+    #                 schema:
+    #                   $ref: '#/definitions/User'
+    #               404:
+    #                 description: User not found
+    #             x-amazon-apigateway-integration:
+    #               uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getUserByName.Arn}/invocations"
+    #               passthroughBehavior: when_no_match
+    #               httpMethod: POST
+    #               type: aws_proxy
+    #           post:
+    #             summary: Create new user
+    #             description: Creates a new user with the specified name
+    #             responses:
+    #               201:
+    #                 description: User created
+    #                 schema:
+    #                   $ref: '#/definitions/User'
+    #               409:
+    #                 description: User already exists
+    #             x-amazon-apigateway-integration:
+    #               uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${createUser.Arn}/invocations"
+    #               passthroughBehavior: when_no_match
+    #               httpMethod: POST
+    #               type: aws_proxy
+    #         /questions:
+    #           get:
+    #             summary: Get all questions
+    #             description: Returns all questions
+    #             responses:
+    #               200:
+    #                 description: Successful response
+    #                 schema:
+    #                   type: array
+    #                   items:
+    #                     $ref: '#/definitions/Question'
+    #             x-amazon-apigateway-integration:
+    #               uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getAllQuestions.Arn}/invocations"
+    #               passthroughBehavior: when_no_match
+    #               httpMethod: POST
+    #               type: aws_proxy
+    #           post:
+    #             summary: Create new question
+    #             description: Creates a new question
+    #             parameters:
+    #               - in: body
+    #                 name: questionData
+    #                 description: Question object to create
+    #                 required: true
+    #                 schema:
+    #                   $ref: '#/definitions/QuestionInput'
+    #             responses:
+    #               201:
+    #                 description: Question created
+    #                 schema:
+    #                   $ref: '#/definitions/Question'
+    #             x-amazon-apigateway-integration:
+    #               uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${createQuestion.Arn}/invocations"
+    #               passthroughBehavior: when_no_match
+    #               httpMethod: POST
+    #               type: aws_proxy
+    #         /questions/{id}:
+    #           get:
+    #             summary: Get question by ID
+    #             description: Retrieves a question by its ID
+    #             parameters:
+    #               - name: id
+    #                 in: path
+    #                 description: ID of the question to retrieve
+    #                 required: true
+    #                 type: integer
+    #             responses:
+    #               200:
+    #                 description: Successful response
+    #                 schema:
+    #                   $ref: '#/definitions/Question'
+    #               404:
+    #                 description: Question not found
+    #             x-amazon-apigateway-integration:
+    #               uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getQuestionById.Arn}/invocations"
+    #               passthroughBehavior: when_no_match
+    #               httpMethod: POST
+    #               type: aws_proxy
+    #         /questions/{user}:
+    #           get:
+    #             summary: Get questions by username
+    #             description: Retrieves all questions by a specific user
+    #             parameters:
+    #               - name: user
+    #                 in: path
+    #                 description: Username to filter by
+    #                 required: true
+    #                 type: string
+    #             responses:
+    #               200:
+    #                 description: Successful response
+    #                 schema:
+    #                   type: array
+    #                   items:
+    #                     $ref: '#/definitions/Question'
+    #             x-amazon-apigateway-integration:
+    #               uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getQuestionsByUser.Arn}/invocations"
+    #               passthroughBehavior: when_no_match
+    #               httpMethod: POST
+    #               type: aws_proxy
+    #         /answers/{user}:
+    #           get:
+    #             summary: Get answers by username
+    #             description: Retrieves all answers by a specific user
+    #             parameters:
+    #               - name: user
+    #                 in: path
+    #                 description: Username to filter by
+    #                 required: true
+    #                 type: string
+    #             responses:
+    #               200:
+    #                 description: Successful response
+    #                 schema:
+    #                   type: array
+    #                   items:
+    #                     $ref: '#/definitions/Answer'
+    #             x-amazon-apigateway-integration:
+    #               uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getAnswersByUser.Arn}/invocations"
+    #               passthroughBehavior: when_no_match
+    #               httpMethod: POST
+    #               type: aws_proxy
+    #         /answers/{question}:
+    #           get:
+    #             summary: Get answers by question
+    #             description: Retrieves all answers to a specific question
+    #             parameters:
+    #               - name: question
+    #                 in: path
+    #                 description: Question ID to filter by
+    #                 required: true
+    #                 type: integer
+    #             responses:
+    #               200:
+    #                 description: Successful response
+    #                 schema:
+    #                   type: array
+    #                   items:
+    #                     $ref: '#/definitions/Answer'
+    #             x-amazon-apigateway-integration:
+    #               uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getAnswersByQuestion.Arn}/invocations"
+    #               passthroughBehavior: when_no_match
+    #               httpMethod: POST
+    #               type: aws_proxy
+    #           post:
+    #             summary: Create new answer
+    #             description: Creates a new answer for a specific question
+    #             parameters:
+    #               - name: question
+    #                 in: path
+    #                 description: Question ID to answer
+    #                 required: true
+    #                 type: integer
+    #               - in: body
+    #                 name: answerData
+    #                 description: Answer object to create
+    #                 required: true
+    #                 schema:
+    #                   $ref: '#/definitions/AnswerInput'
+    #             responses:
+    #               201:
+    #                 description: Answer created
+    #                 schema:
+    #                   $ref: '#/definitions/Answer'
+    #             x-amazon-apigateway-integration:
+    #               uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${createAnswer.Arn}/invocations"
+    #               passthroughBehavior: when_no_match
+    #               httpMethod: POST
+    #               type: aws_proxy
+    #         /comments/{parent}:
+    #           get:
+    #             summary: Get comments by parent
+    #             description: Retrieves all comments for a question or answer
+    #             parameters:
+    #               - name: parent
+    #                 in: path
+    #                 description: Parent ID (question or answer)
+    #                 required: true
+    #                 type: integer
+    #             responses:
+    #               200:
+    #                 description: Successful response
+    #                 schema:
+    #                   type: array
+    #                   items:
+    #                     $ref: '#/definitions/Comment'
+    #             x-amazon-apigateway-integration:
+    #               uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getCommentsByParent.Arn}/invocations"
+    #               passthroughBehavior: when_no_match
+    #               httpMethod: POST
+    #               type: aws_proxy
+    #           post:
+    #             summary: Create new comment
+    #             description: Creates a new comment for a question or answer
+    #             parameters:
+    #               - name: parent
+    #                 in: path
+    #                 description: Parent ID (question or answer)
+    #                 required: true
+    #                 type: integer
+    #               - in: body
+    #                 name: commentData
+    #                 description: Comment object to create
+    #                 required: true
+    #                 schema:
+    #                   $ref: '#/definitions/CommentInput'
+    #             responses:
+    #               201:
+    #                 description: Comment created
+    #                 schema:
+    #                   $ref: '#/definitions/Comment'
+    #             x-amazon-apigateway-integration:
+    #               uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${createComment.Arn}/invocations"
+    #               passthroughBehavior: when_no_match
+    #               httpMethod: POST
+    #               type: aws_proxy
+    #         /comments/{user}:
+    #           get:
+    #             summary: Get comments by user
+    #             description: Retrieves all comments by a specific user
+    #             parameters:
+    #               - name: user
+    #                 in: path
+    #                 description: Username to filter by
+    #                 required: true
+    #                 type: string
+    #             responses:
+    #               200:
+    #                 description: Successful response
+    #                 schema:
+    #                   type: array
+    #                   items:
+    #                     $ref: '#/definitions/Comment'
+    #             x-amazon-apigateway-integration:
+    #               uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${getCommentsByUser.Arn}/invocations"
+    #               passthroughBehavior: when_no_match
+    #               httpMethod: POST
+    #               type: aws_proxy
+    #       definitions:
+    #         User:
+    #           type: object
+    #           properties:
+    #             id:
+    #               type: integer
+    #             name:
+    #               type: string
+    #         Question:
+    #           type: object
+    #           properties:
+    #             id:
+    #               type: integer
+    #             title:
+    #               type: string
+    #             body:
+    #               type: string
+    #             created_at:
+    #               type: string
+    #               format: date-time
+    #             score:
+    #               type: integer
+    #             user_id:
+    #               type: integer
+    #             user_name:
+    #               type: string
+    #             answer_count:
+    #               type: integer
+    #         QuestionInput:
+    #           type: object
+    #           required:
+    #             - title
+    #             - body
+    #             - user_name
+    #           properties:
+    #             title:
+    #               type: string
+    #             body:
+    #               type: string
+    #             user_name:
+    #               type: string
+    #         Answer:
+    #           type: object
+    #           properties:
+    #             id:
+    #               type: integer
+    #             body:
+    #               type: string
+    #             created_at:
+    #               type: string
+    #               format: date-time
+    #             score:
+    #               type: integer
+    #             user_id:
+    #               type: integer
+    #             user_name:
+    #               type: string
+    #             parent_question_id:
+    #               type: integer
+    #             accepted:
+    #               type: boolean
+    #         AnswerInput:
+    #           type: object
+    #           required:
+    #             - body
+    #             - user_name
+    #           properties:
+    #             body:
+    #               type: string
+    #             user_name:
+    #               type: string
+    #         Comment:
+    #           type: object
+    #           properties:
+    #             id:
+    #               type: integer
+    #             body:
+    #               type: string
+    #             user_id:
+    #               type: integer
+    #             user_name:
+    #               type: string
+    #             parent_question_id:
+    #               type: integer
+    #             parent_answer_id:
+    #               type: integer
+    #             created_at:
+    #               type: string
+    #               format: date-time
+    #         CommentInput:
+    #           type: object
+    #           required:
+    #             - body
+    #             - user_name
+    #             - parent_type
+    #           properties:
+    #             body:
+    #               type: string
+    #             user_name:
+    #               type: string
+    #             parent_type:
+    #               type: string
+    #               enum:
+    #                 - question
+    #                 - answer
+    #       x-amazon-apigateway-binary-media-types:
+    #         - 'application/json'
+    #       x-amazon-apigateway-gateway-responses:
+    #         DEFAULT_4XX:
+    #           responseParameters:
+    #             gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+    #         DEFAULT_5XX:
+    #           responseParameters:
+    #             gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
     
-    # Deploy API Gateway
-    ApiGatewayDeployment:
-      Type: AWS::ApiGateway::Deployment
-      DependsOn:
-        - ApiGatewayRestApi
-      Properties:
-        RestApiId: !Ref ApiGatewayRestApi
-        StageName: ${opt:stage, 'dev'}
+    # # Deploy API Gateway
+    # ApiGatewayDeployment:
+    #   Type: AWS::ApiGateway::Deployment
+    #   DependsOn:
+    #     - ApiGatewayRestApi
+    #   Properties:
+    #     RestApiId: !Ref ApiGatewayRestApi
+    #     StageName: ${opt:stage, 'dev'}
     
-    # Enable Swagger UI
-    ApiGatewayDocumentation:
-      Type: AWS::ApiGateway::DocumentationPart
-      Properties:
-        RestApiId: !Ref ApiGatewayRestApi
-        Location:
-          Type: API
-        Properties:
-          info:
-            description: 'API Documentation for Serverless AWS API'
+    # # Enable Swagger UI
+    # ApiGatewayDocumentation:
+    #   Type: AWS::ApiGateway::DocumentationPart
+    #   Properties:
+    #     RestApiId: !Ref ApiGatewayRestApi
+    #     Location:
+    #       Type: API
+    #     Properties:
+    #       info:
+    #         description: 'API Documentation for Stack Overfaux'
     
     # RDS Resources
     PostgresRDSInstance:
