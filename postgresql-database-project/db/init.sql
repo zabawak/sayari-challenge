@@ -57,8 +57,8 @@ CREATE TABLE answers (
     user_id INT NOT NULL,
     user_name VARCHAR(50) NOT NULL,
     accepted BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (parent_question_id) REFERENCES questions(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN_KEY (parent_question_id) REFERENCES questions(id) ON DELETE CASCADE,
+    FOREIGN_KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN_KEY (user_name) REFERENCES users(name) ON DELETE CASCADE
     -- comments 
 );
