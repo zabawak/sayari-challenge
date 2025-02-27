@@ -1,0 +1,438 @@
+service: serverless-aws-api
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  environment:
+    DB_HOST: !GetAtt PostgresRDSInstance.Endpoint.Address
+    DB_PORT: !GetAtt PostgresRDSInstance.Endpoint.Port
+    DB_NAME: ${self:custom.dbName}
+    DB_USER: ${self:custom.dbUsername}
+    DB_PASSWORD: ${self:custom.dbPassword}
+
+plugins:
+  - serverless-localstack
+  - serverless-openapi-documentation
+
+custom:
+  dbName: mydbname
+  dbUsername: dbadmin
+  dbPassword: dbpassword
+  vpcCidr: 10.0.0.0/16
+  privateSubnet1Cidr: 10.0.1.0/24
+  privateSubnet2Cidr: 10.0.2.0/24
+  publicSubnet1Cidr: 10.0.3.0/24
+  publicSubnet2Cidr: 10.0.4.0/24
+  localstack:
+    stages:
+      - local
+  documentation:
+    api:
+      info:
+        version: '1.0.0'
+        title: 'Serverless AWS API'
+        description: 'REST API for resource management'
+        contact:
+          name: 'API Support'
+          url: 'https://www.example.com/support'
+          email: 'support@example.com'
+    models:
+      - name: 'ResourceModel'
+        contentType: 'application/json'
+        schema:
+          type: 'object'
+          properties:
+            id:
+              type: 'string'
+            name:
+              type: 'string'
+            description:
+              type: 'string'
+            createdAt:
+              type: 'string'
+              format: 'date-time'
+
+functions:
+  create:
+    handler: src/functions/create.createHandler
+    events:
+      - http:
+          path: resources
+          method: post
+          documentation:
+            summary: 'Create a new resource'
+            description: 'Creates a new resource with the provided data'
+            requestModels:
+              'application/json': 'ResourceModel'
+            methodResponses:
+              - statusCode: 201
+                responseModels:
+                  'application/json': 'ResourceModel'
+
+  delete:
+    handler: src/functions/delete.deleteHandler
+    events:
+      - http:
+          path: resources/{id}
+          method: delete
+          documentation:
+            summary: 'Delete resource'
+            description: 'Deletes a resource with the specified ID'
+            pathParams:
+              - name: 'id'
+                description: 'ID of the resource to delete'
+            methodResponses:
+              - statusCode: 204
+                description: 'Resource successfully deleted'
+
+  get:
+    handler: src/functions/get.getHandler
+    events:
+      - http:
+          path: resources/{id}
+          method: get
+          documentation:
+            summary: 'Get resource'
+            description: 'Gets a resource with the specified ID'
+            pathParams:
+              - name: 'id'
+                description: 'ID of the resource to retrieve'
+            methodResponses:
+              - statusCode: 200
+                responseModels:
+                  'application/json': 'ResourceModel'
+
+  list:
+    handler: src/functions/list.listHandler
+    events:
+      - http:
+          path: resources
+          method: get
+          documentation:
+            summary: 'List resources'
+            description: 'Lists all available resources'
+            methodResponses:
+              - statusCode: 200
+                responseModels:
+                  'application/json': 'ResourceModel'
+
+  update:
+    handler: src/functions/update.updateHandler
+    events:
+      - http:
+          path: resources/{id}
+          method: put
+          documentation:
+            summary: 'Update resource'
+            description: 'Updates a resource with the specified ID'
+            pathParams:
+              - name: 'id'
+                description: 'ID of the resource to update'
+            requestModels:
+              'application/json': 'ResourceModel'
+            methodResponses:
+              - statusCode: 200
+                responseModels:
+                  'application/json': 'ResourceModel'
+
+resources:
+  Resources:
+    # VPC and Network Resources
+    VPC:
+      Type: AWS::EC2::VPC
+      Properties:
+        CidrBlock: ${self:custom.vpcCidr}
+        EnableDnsSupport: true
+        EnableDnsHostnames: true
+        Tags:
+          - Key: Name
+            Value: ${self:service}-vpc
+
+    # Internet Gateway for public subnets
+    InternetGateway:
+      Type: AWS::EC2::InternetGateway
+      Properties:
+        Tags:
+          - Key: Name
+            Value: ${self:service}-igw
+
+    InternetGatewayAttachment:
+      Type: AWS::EC2::VPCGatewayAttachment
+      Properties:
+        VpcId: !Ref VPC
+        InternetGatewayId: !Ref InternetGateway
+
+    # Public Subnets
+    PublicSubnet1:
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId: !Ref VPC
+        CidrBlock: ${self:custom.publicSubnet1Cidr}
+        AvailabilityZone: !Select [0, !GetAZs '']
+        MapPublicIpOnLaunch: true
+        Tags:
+          - Key: Name
+            Value: ${self:service}-public-subnet-1
+
+    PublicSubnet2:
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId: !Ref VPC
+        CidrBlock: ${self:custom.publicSubnet2Cidr}
+        AvailabilityZone: !Select [1, !GetAZs '']
+        MapPublicIpOnLaunch: true
+        Tags:
+          - Key: Name
+            Value: ${self:service}-public-subnet-2
+
+    # Private Subnets for RDS
+    PrivateSubnet1:
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId: !Ref VPC
+        CidrBlock: ${self:custom.privateSubnet1Cidr}
+        AvailabilityZone: !Select [0, !GetAZs '']
+        Tags:
+          - Key: Name
+            Value: ${self:service}-private-subnet-1
+
+    PrivateSubnet2:
+      Type: AWS::EC2::Subnet
+      Properties:
+        VpcId: !Ref VPC
+        CidrBlock: ${self:custom.privateSubnet2Cidr}
+        AvailabilityZone: !Select [1, !GetAZs '']
+        Tags:
+          - Key: Name
+            Value: ${self:service}-private-subnet-2
+
+    # Route Tables
+    PublicRouteTable:
+      Type: AWS::EC2::RouteTable
+      Properties:
+        VpcId: !Ref VPC
+        Tags:
+          - Key: Name
+            Value: ${self:service}-public-rt
+
+    DefaultPublicRoute:
+      Type: AWS::EC2::Route
+      DependsOn: InternetGatewayAttachment
+      Properties:
+        RouteTableId: !Ref PublicRouteTable
+        DestinationCidrBlock: 0.0.0.0/0
+        GatewayId: !Ref InternetGateway
+
+    PublicSubnet1RouteTableAssociation:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId: !Ref PublicSubnet1
+        RouteTableId: !Ref PublicRouteTable
+
+    PublicSubnet2RouteTableAssociation:
+      Type: AWS::EC2::SubnetRouteTableAssociation
+      Properties:
+        SubnetId: !Ref PublicSubnet2
+        RouteTableId: !Ref PublicRouteTable
+
+    # API Gateway with Swagger UI
+    ApiGatewayRestApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: serverless-aws-api
+        Description: API for managing resources
+        EndpointConfiguration:
+          Types:
+            - REGIONAL
+        Body:
+          swagger: '2.0'
+          info:
+            version: '1.0.0'
+            title: Serverless AWS API
+            description: REST API for resource management
+          basePath: /${opt:stage, 'dev'}
+          schemes:
+            - https
+          consumes:
+            - application/json
+          produces:
+            - application/json
+          paths:
+            /resources:
+              get:
+                summary: List resources
+                description: Lists all available resources
+                responses:
+                  200:
+                    description: Successful response
+                    schema:
+                      type: array
+                      items:
+                        $ref: '#/definitions/Resource'
+              post:
+                summary: Create a new resource
+                description: Creates a new resource with the provided data
+                parameters:
+                  - in: body
+                    name: resourceData
+                    description: Resource object to create
+                    required: true
+                    schema:
+                      $ref: '#/definitions/ResourceInput'
+                responses:
+                  201:
+                    description: Resource created
+                    schema:
+                      $ref: '#/definitions/Resource'
+            /resources/{id}:
+              get:
+                summary: Get resource
+                description: Gets a resource with the specified ID
+                parameters:
+                  - name: id
+                    in: path
+                    description: ID of the resource to retrieve
+                    required: true
+                    type: string
+                responses:
+                  200:
+                    description: Successful response
+                    schema:
+                      $ref: '#/definitions/Resource'
+                  404:
+                    description: Resource not found
+              put:
+                summary: Update resource
+                description: Updates a resource with the specified ID
+                parameters:
+                  - name: id
+                    in: path
+                    description: ID of the resource to update
+                    required: true
+                    type: string
+                  - in: body
+                    name: resourceData
+                    description: Resource object to update
+                    required: true
+                    schema:
+                      $ref: '#/definitions/ResourceInput'
+                responses:
+                  200:
+                    description: Resource updated
+                    schema:
+                      $ref: '#/definitions/Resource'
+                  404:
+                    description: Resource not found
+              delete:
+                summary: Delete resource
+                description: Deletes a resource with the specified ID
+                parameters:
+                  - name: id
+                    in: path
+                    description: ID of the resource to delete
+                    required: true
+                    type: string
+                responses:
+                  204:
+                    description: Resource successfully deleted
+                  404:
+                    description: Resource not found
+          definitions:
+            Resource:
+              type: object
+              properties:
+                id:
+                  type: string
+                name:
+                  type: string
+                description:
+                  type: string
+                createdAt:
+                  type: string
+                  format: date-time
+            ResourceInput:
+              type: object
+              required:
+                - name
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+          x-amazon-apigateway-binary-media-types:
+            - 'application/json'
+          x-amazon-apigateway-gateway-responses:
+            DEFAULT_4XX:
+              responseParameters:
+                gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+            DEFAULT_5XX:
+              responseParameters:
+                gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+    
+    # Deploy API Gateway
+    ApiGatewayDeployment:
+      Type: AWS::ApiGateway::Deployment
+      DependsOn:
+        - ApiGatewayRestApi
+      Properties:
+        RestApiId: !Ref ApiGatewayRestApi
+        StageName: ${opt:stage, 'dev'}
+    
+    # Enable Swagger UI
+    ApiGatewayDocumentation:
+      Type: AWS::ApiGateway::DocumentationPart
+      Properties:
+        RestApiId: !Ref ApiGatewayRestApi
+        Location:
+          Type: API
+        Properties:
+          info:
+            description: 'API Documentation for Serverless AWS API'
+    
+    # RDS Resources
+    PostgresRDSInstance:
+      Type: AWS::RDS::DBInstance
+      Properties:
+        DBName: ${self:custom.dbName}
+        Engine: postgres
+        EngineVersion: 13.7
+        DBInstanceClass: db.t3.micro
+        AllocatedStorage: 20
+        StorageType: gp2
+        MasterUsername: ${self:custom.dbUsername}
+        MasterUserPassword: ${self:custom.dbPassword}
+        VPCSecurityGroups:
+          - !Ref PostgresSecurityGroup
+        DBSubnetGroupName: !Ref PostgresSubnetGroup
+        BackupRetentionPeriod: 7
+        MultiAZ: false
+        PubliclyAccessible: false
+        
+    PostgresSecurityGroup:
+      Type: AWS::EC2::SecurityGroup
+      Properties:
+        GroupDescription: Security group for Postgres RDS
+        VpcId: !Ref VPC
+        SecurityGroupIngress:
+          - IpProtocol: tcp
+            FromPort: 5432
+            ToPort: 5432
+            CidrIp: ${self:custom.vpcCidr}
+            
+    PostgresSubnetGroup:
+      Type: AWS::RDS::DBSubnetGroup
+      Properties:
+        DBSubnetGroupDescription: Subnet group for Postgres RDS
+        SubnetIds:
+          - !Ref PrivateSubnet1
+          - !Ref PrivateSubnet2
+
+  Outputs:
+    ApiGatewayEndpoint:
+      Description: "API Gateway Endpoint"
+      Value: !Sub "https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${opt:stage, 'dev'}"
+    ApiDocsUrl:
+      Description: "API Documentation URL"
+      Value: !Sub "https://${ApiGatewayRestApi}.execute-api.${AWS::Region}.amazonaws.com/${opt:stage, 'dev'}/swagger"
+

@@ -1,0 +1,175 @@
+openapi: 3.0.0
+info:
+  version: "1.0.0"
+  title: stack-overfaux
+  description: The API for interacting with StackOverfaux
+paths:
+  /users:
+    get:
+      tags:
+        - Users
+      description: returns all registered users
+      responses:
+        '200':
+          description: List of all users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /users/{name}:
+    post:
+      tags:
+        - Users
+      description: Creates new user
+      parameters:
+        - name: 'name'
+          in: path
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '201':
+          description: successfully registered user
+          
+    get:
+      tags:
+        - Users
+      description: Gets a user by name
+      parameters:
+        - name: 'name'
+          in: path
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: Successfully returned user
+          
+  /questions:
+    get:
+      tags:
+        - Questions
+      description: Gets all questions
+      responses:
+        '200':
+          description: Successfully returned questions
+    post:
+      tags:
+        - Questions
+      description: Create new question
+      requestBody:
+        content:
+          application/json:
+            schema: { #todo
+            }
+      responses:
+        '201':
+          description: Successfully returned question
+          
+  /questions/{id}:
+    get:
+      tags:
+        - Questions
+      description: Get question by id
+      parameters: 
+        - name: 'id'
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully returned question
+
+  /questions/{user}:
+    get:
+      tags:
+          - Questions
+      description: Get all question by username
+      parameters: 
+          - name: 'user'
+            in: path
+            required: true
+            schema:
+              type: string
+      responses:
+          '200':
+            description: Successfully returned question
+
+  /answers/{user}:
+    get:
+      tags:
+        - Answers
+      description: Get all question by username
+      parameters: 
+          - name: 'user'
+            in: path
+            required: true
+            schema:
+              type: string
+      responses:
+          '200':
+            description: Successfully returned question
+
+  /answers/{question}: 
+    get:
+      tags:
+        - Answers
+      description: Get all answers to individual question
+      parameters: 
+        - name: 'question'
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+          '200':
+            description: Successfully returned answers
+            
+  /comments/{parent}:
+    get:
+      tags:
+        - Comments
+      description: Gets all comments to parent id (question or answer)
+      parameters: 
+        - name: 'parent'
+          in: path
+          required: true
+          schema: 
+            type: integer
+      responses:
+          '200':
+            description: Successfully returned comments
+    post:
+      tags:
+        - Comments
+      description: Post new comment to parent id (question or answer)
+      parameters: 
+        - name: 'parent'
+          in: path
+          required: true
+          schema: 
+            type: integer
+      responses:
+          '201':
+            description: Successfully posted comments
+  
+  /comments/{user}:
+    get:
+      tags:
+        - Comments
+      description: Gets all comments by username
+      parameters: 
+        - name: 'user'
+          in: path
+          required: true
+          schema: 
+            type: string
+      responses:
+          '200':
+            description: Successfully returned comments
+          
+  
+    
