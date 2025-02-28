@@ -47,7 +47,7 @@ Config [here](serverless-aws-api/serverless.yml)
 
 8. Had Claude generate a basic lambda handler for each resource to address the queries required of our API spec above, along with a common handler to handle the actual API resource routing. 
 
-9. Reviewed generated queries.. be impressed with claude-3.7 
+9. Spot checked queries/code/etc 
 
 10. Added DELETE actions to resources
 
