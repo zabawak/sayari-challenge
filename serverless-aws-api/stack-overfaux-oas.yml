@@ -46,6 +46,19 @@ paths:
       responses:
         '200':
           description: Successfully returned user
+    delete:
+      tags:
+        - Users
+      description: Deletes a user by name, along with all of their comments, questions, and answers
+      parameters:
+        - name: 'name'
+          in: path
+          required: true
+          schema:
+            type: 'string'
+      responses:
+        '200':
+          description: Successfully deleted user
           
   /questions:
     get:
@@ -92,10 +105,25 @@ paths:
         '201':
           description: Successfully returned question
 
+  /questions/{id}:
+      delete:
+      tags:
+        - Questions
+      description: Deletes a question by ID, along with all of its comments and answers
+      parameters:
+        - name: 'id'
+          in: path
+          required: true
+          schema:
+            type: 'integer'
+      responses:
+        '200':
+          description: Successfully deleted question
+
   /answers:
     get:
       tags:
-        - Questions
+        - Answers
       description: Gets all answers with optional filtering
       parameters:
         - name: 'id'
@@ -121,7 +149,7 @@ paths:
           description: Successfully returned questions
     post:
       tags:
-        - Questions
+        - Answers
       description: Create new question
       requestBody:
         content:
@@ -142,20 +170,28 @@ paths:
       responses:
         '201':
           description: Successfully returned question
+  /answers/{id}:
+    delete:
+      tags:
+        - Answers
+      description: Deletes an answer by ID, along with all of its comments
+      parameters:
+        - name: 'id'
+          in: path
+          required: true
+          schema:
+            type: 'integer'
+      responses:
+        '200':
+          description: Successfully deleted answer
 
 
   /comments:
     get:
       tags:
-        - Questions
-      description: Gets all answers with optional filtering
+        - Comments
+      description: Gets all comments with optional filtering
       parameters:
-        - name: 'id'
-          in: query
-          required: false
-          schema:
-            type: integer
-          description: Filter by question ID
         - name: 'user'
           in: query
           required: false
@@ -173,7 +209,7 @@ paths:
           description: Successfully returned questions
     post:
       tags:
-        - Questions
+        - Comments
       description: Create new question
       requestBody:
         content:
@@ -194,3 +230,18 @@ paths:
       responses:
         '201':
           description: Successfully returned question
+
+  /comments/{id}:
+    delete:
+      tags:
+        - Comments
+      description: Deletes a comment by ID
+      parameters:
+        - name: 'id'
+          in: path
+          required: true
+          schema:
+            type: 'integer'
+      responses:
+        '200':
+          description: Successfully deleted comment

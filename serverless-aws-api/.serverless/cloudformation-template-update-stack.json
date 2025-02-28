@@ -89,10 +89,10 @@
         "LogGroupName": "/aws/lambda/serverless-aws-api-local-getUserByName"
       }
     },
-    "GetAllQuestionsLogGroup": {
+    "GetQuestionsLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/serverless-aws-api-local-getAllQuestions"
+        "LogGroupName": "/aws/lambda/serverless-aws-api-local-getQuestions"
       }
     },
     "CreateQuestionLogGroup": {
@@ -101,22 +101,16 @@
         "LogGroupName": "/aws/lambda/serverless-aws-api-local-createQuestion"
       }
     },
-    "GetQuestionsByUserLogGroup": {
+    "GetQuestionByIdLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/serverless-aws-api-local-getQuestionsByUser"
+        "LogGroupName": "/aws/lambda/serverless-aws-api-local-getQuestionById"
       }
     },
-    "GetAnswersByUserLogGroup": {
+    "GetAnswersLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/serverless-aws-api-local-getAnswersByUser"
-      }
-    },
-    "GetAnswersByQuestionLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "LogGroupName": "/aws/lambda/serverless-aws-api-local-getAnswersByQuestion"
+        "LogGroupName": "/aws/lambda/serverless-aws-api-local-getAnswers"
       }
     },
     "CreateAnswerLogGroup": {
@@ -125,22 +119,16 @@
         "LogGroupName": "/aws/lambda/serverless-aws-api-local-createAnswer"
       }
     },
-    "GetCommentsByParentLogGroup": {
+    "GetCommentsLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
-        "LogGroupName": "/aws/lambda/serverless-aws-api-local-getCommentsByParent"
+        "LogGroupName": "/aws/lambda/serverless-aws-api-local-getComments"
       }
     },
     "CreateCommentLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
         "LogGroupName": "/aws/lambda/serverless-aws-api-local-createComment"
-      }
-    },
-    "GetCommentsByUserLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "LogGroupName": "/aws/lambda/serverless-aws-api-local-getCommentsByUser"
       }
     },
     "IamRoleLambdaExecution": {
@@ -200,6 +188,14 @@
                       "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/serverless-aws-api-local*:*:*"
                     }
                   ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "rds-data:ExecuteStatement",
+                    "rds-data:BatchExecuteStatement"
+                  ],
+                  "Resource": "*"
                 }
               ]
             }
@@ -228,7 +224,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740702031786-2025-02-28T00:20:31.786Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -272,7 +268,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740702031786-2025-02-28T00:20:31.786Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -316,7 +312,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740702031786-2025-02-28T00:20:31.786Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -353,18 +349,18 @@
         "GetUserByNameLogGroup"
       ]
     },
-    "GetAllQuestionsLambdaFunction": {
+    "GetQuestionsLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740702031786-2025-02-28T00:20:31.786Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
-        "FunctionName": "serverless-aws-api-local-getAllQuestions",
+        "FunctionName": "serverless-aws-api-local-getQuestions",
         "MemorySize": 1024,
         "Timeout": 6,
         "Environment": {
@@ -394,7 +390,7 @@
         }
       },
       "DependsOn": [
-        "GetAllQuestionsLogGroup"
+        "GetQuestionsLogGroup"
       ]
     },
     "CreateQuestionLambdaFunction": {
@@ -404,7 +400,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740702031786-2025-02-28T00:20:31.786Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -441,18 +437,18 @@
         "CreateQuestionLogGroup"
       ]
     },
-    "GetQuestionsByUserLambdaFunction": {
+    "GetQuestionByIdLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740702031786-2025-02-28T00:20:31.786Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
-        "FunctionName": "serverless-aws-api-local-getQuestionsByUser",
+        "FunctionName": "serverless-aws-api-local-getQuestionById",
         "MemorySize": 1024,
         "Timeout": 6,
         "Environment": {
@@ -482,21 +478,21 @@
         }
       },
       "DependsOn": [
-        "GetQuestionsByUserLogGroup"
+        "GetQuestionByIdLogGroup"
       ]
     },
-    "GetAnswersByUserLambdaFunction": {
+    "GetAnswersLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740702031786-2025-02-28T00:20:31.786Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
-        "FunctionName": "serverless-aws-api-local-getAnswersByUser",
+        "FunctionName": "serverless-aws-api-local-getAnswers",
         "MemorySize": 1024,
         "Timeout": 6,
         "Environment": {
@@ -526,51 +522,7 @@
         }
       },
       "DependsOn": [
-        "GetAnswersByUserLogGroup"
-      ]
-    },
-    "GetAnswersByQuestionLambdaFunction": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "ServerlessDeploymentBucket"
-          },
-          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
-        },
-        "Handler": "lambda/index.handler",
-        "Runtime": "nodejs18.x",
-        "FunctionName": "serverless-aws-api-local-getAnswersByQuestion",
-        "MemorySize": 1024,
-        "Timeout": 6,
-        "Environment": {
-          "Variables": {
-            "DB_HOST": {
-              "Fn::GetAtt": [
-                "PostgresRDSInstance",
-                "Endpoint.Address"
-              ]
-            },
-            "DB_PORT": {
-              "Fn::GetAtt": [
-                "PostgresRDSInstance",
-                "Endpoint.Port"
-              ]
-            },
-            "DB_NAME": "mydbname",
-            "DB_USER": "dbadmin",
-            "DB_PASSWORD": "dbpassword"
-          }
-        },
-        "Role": {
-          "Fn::GetAtt": [
-            "IamRoleLambdaExecution",
-            "Arn"
-          ]
-        }
-      },
-      "DependsOn": [
-        "GetAnswersByQuestionLogGroup"
+        "GetAnswersLogGroup"
       ]
     },
     "CreateAnswerLambdaFunction": {
@@ -580,7 +532,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740702031786-2025-02-28T00:20:31.786Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -617,18 +569,18 @@
         "CreateAnswerLogGroup"
       ]
     },
-    "GetCommentsByParentLambdaFunction": {
+    "GetCommentsLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
         "Code": {
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740702031786-2025-02-28T00:20:31.786Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
-        "FunctionName": "serverless-aws-api-local-getCommentsByParent",
+        "FunctionName": "serverless-aws-api-local-getComments",
         "MemorySize": 1024,
         "Timeout": 6,
         "Environment": {
@@ -658,7 +610,7 @@
         }
       },
       "DependsOn": [
-        "GetCommentsByParentLogGroup"
+        "GetCommentsLogGroup"
       ]
     },
     "CreateCommentLambdaFunction": {
@@ -668,7 +620,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740702031786-2025-02-28T00:20:31.786Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -705,168 +657,104 @@
         "CreateCommentLogGroup"
       ]
     },
-    "GetCommentsByUserLambdaFunction": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "ServerlessDeploymentBucket"
-          },
-          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
-        },
-        "Handler": "lambda/index.handler",
-        "Runtime": "nodejs18.x",
-        "FunctionName": "serverless-aws-api-local-getCommentsByUser",
-        "MemorySize": 1024,
-        "Timeout": 6,
-        "Environment": {
-          "Variables": {
-            "DB_HOST": {
-              "Fn::GetAtt": [
-                "PostgresRDSInstance",
-                "Endpoint.Address"
-              ]
-            },
-            "DB_PORT": {
-              "Fn::GetAtt": [
-                "PostgresRDSInstance",
-                "Endpoint.Port"
-              ]
-            },
-            "DB_NAME": "mydbname",
-            "DB_USER": "dbadmin",
-            "DB_PASSWORD": "dbpassword"
-          }
-        },
-        "Role": {
-          "Fn::GetAtt": [
-            "IamRoleLambdaExecution",
-            "Arn"
-          ]
-        }
-      },
-      "DependsOn": [
-        "GetCommentsByUserLogGroup"
-      ]
-    },
-    "GetAllUsersLambdaVersioncUjjIdik5PgVUOy385rgyuLRbIX5bJ6FOJ597uXVZY": {
+    "GetAllUsersLambdaVersionk2yYilwD6sLCyoY12bQkr8Rt4S55aMsbou5YCzBMc": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "GetAllUsersLambdaFunction"
         },
-        "CodeSha256": "S7iKSWearPTjB+c8c9omjtgMgfglsVP8wGp2jJBb7J8="
+        "CodeSha256": "Fx1beIc4SsFQuSwgE8zafdcra2ifFfDskxGWlpBmpS4="
       }
     },
-    "CreateUserLambdaVersion5RcnxjPOOIgSHuQp4KYgYRFGNhlGW0NDQuSGKC8us4": {
+    "CreateUserLambdaVersiono3Vd7glcMdrFsH5VL7mICN1heRrjXvVhj8JWfUKX8k": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "CreateUserLambdaFunction"
         },
-        "CodeSha256": "S7iKSWearPTjB+c8c9omjtgMgfglsVP8wGp2jJBb7J8="
+        "CodeSha256": "Fx1beIc4SsFQuSwgE8zafdcra2ifFfDskxGWlpBmpS4="
       }
     },
-    "GetUserByNameLambdaVersionxVq19OR3KY8mwRBMTxDfsccFUiItFoCGozvfMjRur20": {
+    "GetUserByNameLambdaVersionFwQ9Zvv7yeeH2S62WAQB4nO5OjZ1glHRdu19ejyt9w": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "GetUserByNameLambdaFunction"
         },
-        "CodeSha256": "S7iKSWearPTjB+c8c9omjtgMgfglsVP8wGp2jJBb7J8="
+        "CodeSha256": "Fx1beIc4SsFQuSwgE8zafdcra2ifFfDskxGWlpBmpS4="
       }
     },
-    "GetAllQuestionsLambdaVersionYId2XeSjzLag1krf4StIi5ON2nE588IoW5i8fHFlgY": {
+    "GetQuestionsLambdaVersionu6XD4DGrbyN7oCEOGq8tB8hWvNs7o4VWaX7YHV8PGY": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
-          "Ref": "GetAllQuestionsLambdaFunction"
+          "Ref": "GetQuestionsLambdaFunction"
         },
-        "CodeSha256": "S7iKSWearPTjB+c8c9omjtgMgfglsVP8wGp2jJBb7J8="
+        "CodeSha256": "Fx1beIc4SsFQuSwgE8zafdcra2ifFfDskxGWlpBmpS4="
       }
     },
-    "CreateQuestionLambdaVersionE7JSnPIze5skYWOJY7RZyuY3AMwOr2RSImlcaoJrKw": {
+    "CreateQuestionLambdaVersion5dcrM0fTDwt1we45pHeTJmpzsYWYXirN0FIgOCce4": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "CreateQuestionLambdaFunction"
         },
-        "CodeSha256": "S7iKSWearPTjB+c8c9omjtgMgfglsVP8wGp2jJBb7J8="
+        "CodeSha256": "Fx1beIc4SsFQuSwgE8zafdcra2ifFfDskxGWlpBmpS4="
       }
     },
-    "GetQuestionsByUserLambdaVersionzJPqyz1P32A8Xjha7kpx1V5uBMOZmFs368OrH3iU": {
+    "GetQuestionByIdLambdaVersionrqwWYhdcYRBctRrHjT6hsHY3sMW5cv3AmpTTD7MUMs": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
-          "Ref": "GetQuestionsByUserLambdaFunction"
+          "Ref": "GetQuestionByIdLambdaFunction"
         },
-        "CodeSha256": "S7iKSWearPTjB+c8c9omjtgMgfglsVP8wGp2jJBb7J8="
+        "CodeSha256": "Fx1beIc4SsFQuSwgE8zafdcra2ifFfDskxGWlpBmpS4="
       }
     },
-    "GetAnswersByUserLambdaVersionRODOLt46LTb1Stl0IEKOhmngZWP2KyV2FanNZgpiSg": {
+    "GetAnswersLambdaVersioneahW7I6rxGueyW6FBwCK17etDPipIawr9SA3ZsyT0": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
-          "Ref": "GetAnswersByUserLambdaFunction"
+          "Ref": "GetAnswersLambdaFunction"
         },
-        "CodeSha256": "S7iKSWearPTjB+c8c9omjtgMgfglsVP8wGp2jJBb7J8="
+        "CodeSha256": "Fx1beIc4SsFQuSwgE8zafdcra2ifFfDskxGWlpBmpS4="
       }
     },
-    "GetAnswersByQuestionLambdaVersionpdutqivR7nlljvTVFv3O6az69C8ODi4uOWTnDlfeuo": {
-      "Type": "AWS::Lambda::Version",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "FunctionName": {
-          "Ref": "GetAnswersByQuestionLambdaFunction"
-        },
-        "CodeSha256": "S7iKSWearPTjB+c8c9omjtgMgfglsVP8wGp2jJBb7J8="
-      }
-    },
-    "CreateAnswerLambdaVersion0mBs7z7T6UD95uv0Hp6QT4hjR3A6lPcIAQYoQzcBsE": {
+    "CreateAnswerLambdaVersionCpZ6GCTf1ca1mhG9bcYUb6HgQJbwzAzlJSxntKqbvc4": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "CreateAnswerLambdaFunction"
         },
-        "CodeSha256": "S7iKSWearPTjB+c8c9omjtgMgfglsVP8wGp2jJBb7J8="
+        "CodeSha256": "Fx1beIc4SsFQuSwgE8zafdcra2ifFfDskxGWlpBmpS4="
       }
     },
-    "GetCommentsByParentLambdaVersionpbkGr12DgBj0HWOedEE5R8SADk4GcezCBSVsSr3xxRU": {
+    "GetCommentsLambdaVersionzahvt3sZVhMBeM2mPUI3WcRwm9EIKsN8uyvCMIVg": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
-          "Ref": "GetCommentsByParentLambdaFunction"
+          "Ref": "GetCommentsLambdaFunction"
         },
-        "CodeSha256": "S7iKSWearPTjB+c8c9omjtgMgfglsVP8wGp2jJBb7J8="
+        "CodeSha256": "Fx1beIc4SsFQuSwgE8zafdcra2ifFfDskxGWlpBmpS4="
       }
     },
-    "CreateCommentLambdaVersion0CHzEW6tpAMLJ5r3SL5BrPflHTRYfSHmCJi1eOH6LGc": {
+    "CreateCommentLambdaVersionFw3xA1YO9672sVV50Sqv1TwUUAnrytkqm46Lm5MZlE": {
       "Type": "AWS::Lambda::Version",
       "DeletionPolicy": "Retain",
       "Properties": {
         "FunctionName": {
           "Ref": "CreateCommentLambdaFunction"
         },
-        "CodeSha256": "S7iKSWearPTjB+c8c9omjtgMgfglsVP8wGp2jJBb7J8="
-      }
-    },
-    "GetCommentsByUserLambdaVersionwnLrEF59naOfgpVVPDiNc1UIDOckZYCElbnEt9d8sI": {
-      "Type": "AWS::Lambda::Version",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "FunctionName": {
-          "Ref": "GetCommentsByUserLambdaFunction"
-        },
-        "CodeSha256": "S7iKSWearPTjB+c8c9omjtgMgfglsVP8wGp2jJBb7J8="
+        "CodeSha256": "Fx1beIc4SsFQuSwgE8zafdcra2ifFfDskxGWlpBmpS4="
       }
     },
     "ApiGatewayRestApi": {
@@ -923,18 +811,6 @@
         }
       }
     },
-    "ApiGatewayResourceQuestionsUserVar": {
-      "Type": "AWS::ApiGateway::Resource",
-      "Properties": {
-        "ParentId": {
-          "Ref": "ApiGatewayResourceQuestions"
-        },
-        "PathPart": "{user}",
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        }
-      }
-    },
     "ApiGatewayResourceAnswers": {
       "Type": "AWS::ApiGateway::Resource",
       "Properties": {
@@ -945,30 +821,6 @@
           ]
         },
         "PathPart": "answers",
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        }
-      }
-    },
-    "ApiGatewayResourceAnswersUserVar": {
-      "Type": "AWS::ApiGateway::Resource",
-      "Properties": {
-        "ParentId": {
-          "Ref": "ApiGatewayResourceAnswers"
-        },
-        "PathPart": "{user}",
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        }
-      }
-    },
-    "ApiGatewayResourceAnswersQuestionVar": {
-      "Type": "AWS::ApiGateway::Resource",
-      "Properties": {
-        "ParentId": {
-          "Ref": "ApiGatewayResourceAnswers"
-        },
-        "PathPart": "{question}",
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         }
@@ -989,25 +841,226 @@
         }
       }
     },
-    "ApiGatewayResourceCommentsParentVar": {
-      "Type": "AWS::ApiGateway::Resource",
+    "ApiGatewayMethodUsersOptions": {
+      "Type": "AWS::ApiGateway::Method",
       "Properties": {
-        "ParentId": {
-          "Ref": "ApiGatewayResourceComments"
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ]
         },
-        "PathPart": "{parent}",
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceUsers"
+        },
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         }
       }
     },
-    "ApiGatewayResourceCommentsUserVar": {
-      "Type": "AWS::ApiGateway::Resource",
+    "ApiGatewayMethodUsersNameVarOptions": {
+      "Type": "AWS::ApiGateway::Method",
       "Properties": {
-        "ParentId": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,POST'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ]
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceUsersNameVar"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodQuestionsOptions": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST,GET'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ]
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceQuestions"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodAnswersOptions": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST,GET'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ]
+        },
+        "ResourceId": {
+          "Ref": "ApiGatewayResourceAnswers"
+        },
+        "RestApiId": {
+          "Ref": "ApiGatewayRestApi"
+        }
+      }
+    },
+    "ApiGatewayMethodCommentsOptions": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "AuthorizationType": "NONE",
+        "HttpMethod": "OPTIONS",
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": true,
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true
+            },
+            "ResponseModels": {}
+          }
+        ],
+        "RequestParameters": {},
+        "Integration": {
+          "Type": "MOCK",
+          "RequestTemplates": {
+            "application/json": "{statusCode:200}"
+          },
+          "ContentHandling": "CONVERT_TO_TEXT",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Origin": "'*'",
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent,X-Amzn-Trace-Id'",
+                "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,POST,GET'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ]
+        },
+        "ResourceId": {
           "Ref": "ApiGatewayResourceComments"
         },
-        "PathPart": "{user}",
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         }
@@ -1182,7 +1235,7 @@
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "GetAllQuestionsLambdaFunction",
+                    "GetQuestionByIdLambdaFunction",
                     "Arn"
                   ]
                 },
@@ -1194,7 +1247,7 @@
         "MethodResponses": []
       },
       "DependsOn": [
-        "GetAllQuestionsLambdaPermissionApiGateway"
+        "GetQuestionByIdLambdaPermissionApiGateway"
       ]
     },
     "ApiGatewayMethodQuestionsPost": {
@@ -1243,13 +1296,13 @@
         "CreateQuestionLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayMethodQuestionsUserVarGet": {
+    "ApiGatewayMethodAnswersGet": {
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
         "HttpMethod": "GET",
         "RequestParameters": {},
         "ResourceId": {
-          "Ref": "ApiGatewayResourceQuestionsUserVar"
+          "Ref": "ApiGatewayResourceAnswers"
         },
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
@@ -1274,7 +1327,7 @@
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "GetQuestionsByUserLambdaFunction",
+                    "GetAnswersLambdaFunction",
                     "Arn"
                   ]
                 },
@@ -1286,108 +1339,16 @@
         "MethodResponses": []
       },
       "DependsOn": [
-        "GetQuestionsByUserLambdaPermissionApiGateway"
+        "GetAnswersLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayMethodAnswersUserVarGet": {
-      "Type": "AWS::ApiGateway::Method",
-      "Properties": {
-        "HttpMethod": "GET",
-        "RequestParameters": {},
-        "ResourceId": {
-          "Ref": "ApiGatewayResourceAnswersUserVar"
-        },
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        },
-        "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
-        "Integration": {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":apigateway:",
-                {
-                  "Ref": "AWS::Region"
-                },
-                ":lambda:path/2015-03-31/functions/",
-                {
-                  "Fn::GetAtt": [
-                    "GetAnswersByUserLambdaFunction",
-                    "Arn"
-                  ]
-                },
-                "/invocations"
-              ]
-            ]
-          }
-        },
-        "MethodResponses": []
-      },
-      "DependsOn": [
-        "GetAnswersByUserLambdaPermissionApiGateway"
-      ]
-    },
-    "ApiGatewayMethodAnswersQuestionVarGet": {
-      "Type": "AWS::ApiGateway::Method",
-      "Properties": {
-        "HttpMethod": "GET",
-        "RequestParameters": {},
-        "ResourceId": {
-          "Ref": "ApiGatewayResourceAnswersQuestionVar"
-        },
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        },
-        "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
-        "Integration": {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":apigateway:",
-                {
-                  "Ref": "AWS::Region"
-                },
-                ":lambda:path/2015-03-31/functions/",
-                {
-                  "Fn::GetAtt": [
-                    "GetAnswersByQuestionLambdaFunction",
-                    "Arn"
-                  ]
-                },
-                "/invocations"
-              ]
-            ]
-          }
-        },
-        "MethodResponses": []
-      },
-      "DependsOn": [
-        "GetAnswersByQuestionLambdaPermissionApiGateway"
-      ]
-    },
-    "ApiGatewayMethodAnswersQuestionVarPost": {
+    "ApiGatewayMethodAnswersPost": {
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
         "HttpMethod": "POST",
         "RequestParameters": {},
         "ResourceId": {
-          "Ref": "ApiGatewayResourceAnswersQuestionVar"
+          "Ref": "ApiGatewayResourceAnswers"
         },
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
@@ -1427,13 +1388,13 @@
         "CreateAnswerLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayMethodCommentsParentVarGet": {
+    "ApiGatewayMethodCommentsGet": {
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
         "HttpMethod": "GET",
         "RequestParameters": {},
         "ResourceId": {
-          "Ref": "ApiGatewayResourceCommentsParentVar"
+          "Ref": "ApiGatewayResourceComments"
         },
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
@@ -1458,7 +1419,7 @@
                 ":lambda:path/2015-03-31/functions/",
                 {
                   "Fn::GetAtt": [
-                    "GetCommentsByParentLambdaFunction",
+                    "GetCommentsLambdaFunction",
                     "Arn"
                   ]
                 },
@@ -1470,16 +1431,16 @@
         "MethodResponses": []
       },
       "DependsOn": [
-        "GetCommentsByParentLambdaPermissionApiGateway"
+        "GetCommentsLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayMethodCommentsParentVarPost": {
+    "ApiGatewayMethodCommentsPost": {
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
         "HttpMethod": "POST",
         "RequestParameters": {},
         "ResourceId": {
-          "Ref": "ApiGatewayResourceCommentsParentVar"
+          "Ref": "ApiGatewayResourceComments"
         },
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
@@ -1519,53 +1480,7 @@
         "CreateCommentLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayMethodCommentsUserVarGet": {
-      "Type": "AWS::ApiGateway::Method",
-      "Properties": {
-        "HttpMethod": "GET",
-        "RequestParameters": {},
-        "ResourceId": {
-          "Ref": "ApiGatewayResourceCommentsUserVar"
-        },
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        },
-        "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
-        "Integration": {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":apigateway:",
-                {
-                  "Ref": "AWS::Region"
-                },
-                ":lambda:path/2015-03-31/functions/",
-                {
-                  "Fn::GetAtt": [
-                    "GetCommentsByUserLambdaFunction",
-                    "Arn"
-                  ]
-                },
-                "/invocations"
-              ]
-            ]
-          }
-        },
-        "MethodResponses": []
-      },
-      "DependsOn": [
-        "GetCommentsByUserLambdaPermissionApiGateway"
-      ]
-    },
-    "ApiGatewayDeployment1740700184310": {
+    "ApiGatewayDeployment1740702019703": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -1574,18 +1489,21 @@
         "StageName": "local"
       },
       "DependsOn": [
+        "ApiGatewayMethodUsersOptions",
+        "ApiGatewayMethodUsersNameVarOptions",
+        "ApiGatewayMethodQuestionsOptions",
+        "ApiGatewayMethodAnswersOptions",
+        "ApiGatewayMethodCommentsOptions",
         "ApiGatewayMethodUsersGet",
         "ApiGatewayMethodUsersNameVarPost",
         "ApiGatewayMethodUsersNameVarGet",
         "ApiGatewayMethodQuestionsGet",
         "ApiGatewayMethodQuestionsPost",
-        "ApiGatewayMethodQuestionsUserVarGet",
-        "ApiGatewayMethodAnswersUserVarGet",
-        "ApiGatewayMethodAnswersQuestionVarGet",
-        "ApiGatewayMethodAnswersQuestionVarPost",
-        "ApiGatewayMethodCommentsParentVarGet",
-        "ApiGatewayMethodCommentsParentVarPost",
-        "ApiGatewayMethodCommentsUserVarGet"
+        "ApiGatewayMethodQuestionsGet",
+        "ApiGatewayMethodAnswersGet",
+        "ApiGatewayMethodAnswersPost",
+        "ApiGatewayMethodCommentsGet",
+        "ApiGatewayMethodCommentsPost"
       ]
     },
     "GetAllUsersLambdaPermissionApiGateway": {
@@ -1699,12 +1617,12 @@
         }
       }
     },
-    "GetAllQuestionsLambdaPermissionApiGateway": {
+    "GetQuestionsLambdaPermissionApiGateway": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "FunctionName": {
           "Fn::GetAtt": [
-            "GetAllQuestionsLambdaFunction",
+            "GetQuestionsLambdaFunction",
             "Arn"
           ]
         },
@@ -1773,12 +1691,12 @@
         }
       }
     },
-    "GetQuestionsByUserLambdaPermissionApiGateway": {
+    "GetQuestionByIdLambdaPermissionApiGateway": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "FunctionName": {
           "Fn::GetAtt": [
-            "GetQuestionsByUserLambdaFunction",
+            "GetQuestionByIdLambdaFunction",
             "Arn"
           ]
         },
@@ -1810,49 +1728,12 @@
         }
       }
     },
-    "GetAnswersByUserLambdaPermissionApiGateway": {
+    "GetAnswersLambdaPermissionApiGateway": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "FunctionName": {
           "Fn::GetAtt": [
-            "GetAnswersByUserLambdaFunction",
-            "Arn"
-          ]
-        },
-        "Action": "lambda:InvokeFunction",
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":",
-              {
-                "Ref": "ApiGatewayRestApi"
-              },
-              "/*/*"
-            ]
-          ]
-        }
-      }
-    },
-    "GetAnswersByQuestionLambdaPermissionApiGateway": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "GetAnswersByQuestionLambdaFunction",
+            "GetAnswersLambdaFunction",
             "Arn"
           ]
         },
@@ -1921,12 +1802,12 @@
         }
       }
     },
-    "GetCommentsByParentLambdaPermissionApiGateway": {
+    "GetCommentsLambdaPermissionApiGateway": {
       "Type": "AWS::Lambda::Permission",
       "Properties": {
         "FunctionName": {
           "Fn::GetAtt": [
-            "GetCommentsByParentLambdaFunction",
+            "GetCommentsLambdaFunction",
             "Arn"
           ]
         },
@@ -1964,43 +1845,6 @@
         "FunctionName": {
           "Fn::GetAtt": [
             "CreateCommentLambdaFunction",
-            "Arn"
-          ]
-        },
-        "Action": "lambda:InvokeFunction",
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":",
-              {
-                "Ref": "ApiGatewayRestApi"
-              },
-              "/*/*"
-            ]
-          ]
-        }
-      }
-    },
-    "GetCommentsByUserLambdaPermissionApiGateway": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "GetCommentsByUserLambdaFunction",
             "Arn"
           ]
         },
@@ -2281,7 +2125,7 @@
     "GetAllUsersLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetAllUsersLambdaVersioncUjjIdik5PgVUOy385rgyuLRbIX5bJ6FOJ597uXVZY"
+        "Ref": "GetAllUsersLambdaVersionk2yYilwD6sLCyoY12bQkr8Rt4S55aMsbou5YCzBMc"
       },
       "Export": {
         "Name": "sls-serverless-aws-api-local-GetAllUsersLambdaFunctionQualifiedArn"
@@ -2290,7 +2134,7 @@
     "CreateUserLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "CreateUserLambdaVersion5RcnxjPOOIgSHuQp4KYgYRFGNhlGW0NDQuSGKC8us4"
+        "Ref": "CreateUserLambdaVersiono3Vd7glcMdrFsH5VL7mICN1heRrjXvVhj8JWfUKX8k"
       },
       "Export": {
         "Name": "sls-serverless-aws-api-local-CreateUserLambdaFunctionQualifiedArn"
@@ -2299,91 +2143,73 @@
     "GetUserByNameLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetUserByNameLambdaVersionxVq19OR3KY8mwRBMTxDfsccFUiItFoCGozvfMjRur20"
+        "Ref": "GetUserByNameLambdaVersionFwQ9Zvv7yeeH2S62WAQB4nO5OjZ1glHRdu19ejyt9w"
       },
       "Export": {
         "Name": "sls-serverless-aws-api-local-GetUserByNameLambdaFunctionQualifiedArn"
       }
     },
-    "GetAllQuestionsLambdaFunctionQualifiedArn": {
+    "GetQuestionsLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetAllQuestionsLambdaVersionYId2XeSjzLag1krf4StIi5ON2nE588IoW5i8fHFlgY"
+        "Ref": "GetQuestionsLambdaVersionu6XD4DGrbyN7oCEOGq8tB8hWvNs7o4VWaX7YHV8PGY"
       },
       "Export": {
-        "Name": "sls-serverless-aws-api-local-GetAllQuestionsLambdaFunctionQualifiedArn"
+        "Name": "sls-serverless-aws-api-local-GetQuestionsLambdaFunctionQualifiedArn"
       }
     },
     "CreateQuestionLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "CreateQuestionLambdaVersionE7JSnPIze5skYWOJY7RZyuY3AMwOr2RSImlcaoJrKw"
+        "Ref": "CreateQuestionLambdaVersion5dcrM0fTDwt1we45pHeTJmpzsYWYXirN0FIgOCce4"
       },
       "Export": {
         "Name": "sls-serverless-aws-api-local-CreateQuestionLambdaFunctionQualifiedArn"
       }
     },
-    "GetQuestionsByUserLambdaFunctionQualifiedArn": {
+    "GetQuestionByIdLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetQuestionsByUserLambdaVersionzJPqyz1P32A8Xjha7kpx1V5uBMOZmFs368OrH3iU"
+        "Ref": "GetQuestionByIdLambdaVersionrqwWYhdcYRBctRrHjT6hsHY3sMW5cv3AmpTTD7MUMs"
       },
       "Export": {
-        "Name": "sls-serverless-aws-api-local-GetQuestionsByUserLambdaFunctionQualifiedArn"
+        "Name": "sls-serverless-aws-api-local-GetQuestionByIdLambdaFunctionQualifiedArn"
       }
     },
-    "GetAnswersByUserLambdaFunctionQualifiedArn": {
+    "GetAnswersLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetAnswersByUserLambdaVersionRODOLt46LTb1Stl0IEKOhmngZWP2KyV2FanNZgpiSg"
+        "Ref": "GetAnswersLambdaVersioneahW7I6rxGueyW6FBwCK17etDPipIawr9SA3ZsyT0"
       },
       "Export": {
-        "Name": "sls-serverless-aws-api-local-GetAnswersByUserLambdaFunctionQualifiedArn"
-      }
-    },
-    "GetAnswersByQuestionLambdaFunctionQualifiedArn": {
-      "Description": "Current Lambda function version",
-      "Value": {
-        "Ref": "GetAnswersByQuestionLambdaVersionpdutqivR7nlljvTVFv3O6az69C8ODi4uOWTnDlfeuo"
-      },
-      "Export": {
-        "Name": "sls-serverless-aws-api-local-GetAnswersByQuestionLambdaFunctionQualifiedArn"
+        "Name": "sls-serverless-aws-api-local-GetAnswersLambdaFunctionQualifiedArn"
       }
     },
     "CreateAnswerLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "CreateAnswerLambdaVersion0mBs7z7T6UD95uv0Hp6QT4hjR3A6lPcIAQYoQzcBsE"
+        "Ref": "CreateAnswerLambdaVersionCpZ6GCTf1ca1mhG9bcYUb6HgQJbwzAzlJSxntKqbvc4"
       },
       "Export": {
         "Name": "sls-serverless-aws-api-local-CreateAnswerLambdaFunctionQualifiedArn"
       }
     },
-    "GetCommentsByParentLambdaFunctionQualifiedArn": {
+    "GetCommentsLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "GetCommentsByParentLambdaVersionpbkGr12DgBj0HWOedEE5R8SADk4GcezCBSVsSr3xxRU"
+        "Ref": "GetCommentsLambdaVersionzahvt3sZVhMBeM2mPUI3WcRwm9EIKsN8uyvCMIVg"
       },
       "Export": {
-        "Name": "sls-serverless-aws-api-local-GetCommentsByParentLambdaFunctionQualifiedArn"
+        "Name": "sls-serverless-aws-api-local-GetCommentsLambdaFunctionQualifiedArn"
       }
     },
     "CreateCommentLambdaFunctionQualifiedArn": {
       "Description": "Current Lambda function version",
       "Value": {
-        "Ref": "CreateCommentLambdaVersion0CHzEW6tpAMLJ5r3SL5BrPflHTRYfSHmCJi1eOH6LGc"
+        "Ref": "CreateCommentLambdaVersionFw3xA1YO9672sVV50Sqv1TwUUAnrytkqm46Lm5MZlE"
       },
       "Export": {
         "Name": "sls-serverless-aws-api-local-CreateCommentLambdaFunctionQualifiedArn"
-      }
-    },
-    "GetCommentsByUserLambdaFunctionQualifiedArn": {
-      "Description": "Current Lambda function version",
-      "Value": {
-        "Ref": "GetCommentsByUserLambdaVersionwnLrEF59naOfgpVVPDiNc1UIDOckZYCElbnEt9d8sI"
-      },
-      "Export": {
-        "Name": "sls-serverless-aws-api-local-GetCommentsByUserLambdaFunctionQualifiedArn"
       }
     },
     "ServiceEndpoint": {

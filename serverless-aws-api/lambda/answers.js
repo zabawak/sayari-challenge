@@ -11,7 +11,7 @@ exports.getAnswers = async (event) => {
     
     let sql;
     let params = [];
-    let paramIndex = 1;
+    let paramIndex = 1; //potential to add more queryParams if needed
     let whereClause = [];
     
     // Base query
