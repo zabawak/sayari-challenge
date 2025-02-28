@@ -104,7 +104,6 @@ paths:
       responses:
         '201':
           description: Successfully returned question
-
   /questions/{id}:
       delete:
       tags:

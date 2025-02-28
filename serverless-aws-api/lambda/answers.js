@@ -124,3 +124,57 @@ exports.createAnswer = async (event) => {
     };
   }
 };
+
+// DELETE /answers/{id} - Delete an answer by ID
+exports.deleteAnswer = async (event) => {
+  try {
+    const answerId = parseInt(event.pathParameters.id);
+    
+    if (isNaN(answerId)) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ message: 'Answer ID must be a number' })
+      };
+    }
+    
+    // Check if answer exists
+    const answerExists = await query('SELECT id FROM answers WHERE id = $1', [answerId]);
+    if (answerExists.rows.length === 0) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ message: 'Answer not found' })
+      };
+    }
+    
+    // Begin transaction to delete answer and related data
+    const client = await pool.connect();
+    
+    try {
+      await client.query('BEGIN');
+      
+      // Delete comments on this answer
+      await client.query('DELETE FROM comments WHERE parent_answer_id = $1', [answerId]);
+      
+      // Delete the answer
+      await client.query('DELETE FROM answers WHERE id = $1', [answerId]);
+      
+      await client.query('COMMIT');
+      
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: 'Answer and all associated comments deleted successfully' })
+      };
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error('Error deleting answer:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: 'Internal server error' })
+    };
+  }
+};

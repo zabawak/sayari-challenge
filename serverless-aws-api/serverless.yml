@@ -222,6 +222,24 @@ functions:
                 description: 'Successfully returned user'
                 responseModels:
                   'application/json': 'UserModel'
+                  
+  # NEW: Delete user function
+  deleteUser:
+    handler: lambda/index.handler
+    events:
+      - http:
+          path: users/{name}
+          method: delete
+          cors: true
+          documentation:
+            summary: 'Delete user'
+            description: 'Deletes a user by name, along with all of their comments, questions, and answers'
+            pathParams:
+              - name: 'name'
+                description: 'Username to delete'
+            methodResponses:
+              - statusCode: 200
+                description: 'Successfully deleted user'
 
   # Question functions
   getQuestions:
@@ -264,23 +282,24 @@ functions:
                 description: 'Successfully returned question'
                 responseModels:
                   'application/json': 'QuestionModel'
-
-  getQuestionById:
+                  
+  # NEW: Delete question function
+  deleteQuestion:
     handler: lambda/index.handler
     events:
       - http:
-          path: questions
-          method: get
+          path: questions/{id}
+          method: delete
+          cors: true
           documentation:
-            summary: 'Get question by ID'
-            description: 'Retrieves a question by its ID'
+            summary: 'Delete question'
+            description: 'Deletes a question by ID, along with all of its comments and answers'
             pathParams:
               - name: 'id'
-                description: 'ID of the question'
+                description: 'Question ID to delete'
             methodResponses:
               - statusCode: 200
-                responseModels:
-                  'application/json': 'QuestionModel'
+                description: 'Successfully deleted question'
 
   # Answer functions
   getAnswers:
@@ -326,6 +345,24 @@ functions:
                 description: 'Successfully created answer'
                 responseModels:
                   'application/json': 'AnswerModel'
+                  
+  # NEW: Delete answer function
+  deleteAnswer:
+    handler: lambda/index.handler
+    events:
+      - http:
+          path: answers/{id}
+          method: delete
+          cors: true
+          documentation:
+            summary: 'Delete answer'
+            description: 'Deletes an answer by ID, along with all of its comments'
+            pathParams:
+              - name: 'id'
+                description: 'Answer ID to delete'
+            methodResponses:
+              - statusCode: 200
+                description: 'Successfully deleted answer'
 
   # Comment functions
   getComments:
@@ -371,6 +408,24 @@ functions:
                 description: 'Successfully posted comment'
                 responseModels:
                   'application/json': 'CommentModel'
+                  
+  # NEW: Delete comment function
+  deleteComment:
+    handler: lambda/index.handler
+    events:
+      - http:
+          path: comments/{id}
+          method: delete
+          cors: true
+          documentation:
+            summary: 'Delete comment'
+            description: 'Deletes a comment by ID'
+            pathParams:
+              - name: 'id'
+                description: 'Comment ID to delete'
+            methodResponses:
+              - statusCode: 200
+                description: 'Successfully deleted comment'
 
 resources:
   Resources:

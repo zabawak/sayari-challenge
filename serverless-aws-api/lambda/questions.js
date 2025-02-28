@@ -220,3 +220,66 @@ exports.getQuestionsByUser = async (event) => {
     };
   }
 };
+
+// DELETE /questions/{id} - Delete a question by ID
+exports.deleteQuestion = async (event) => {
+  try {
+    const questionId = parseInt(event.pathParameters.id);
+    
+    if (isNaN(questionId)) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ message: 'Question ID must be a number' })
+      };
+    }
+    
+    // Check if question exists
+    const questionExists = await query('SELECT id FROM questions WHERE id = $1', [questionId]);
+    if (questionExists.rows.length === 0) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ message: 'Question not found' })
+      };
+    }
+    
+    // Begin transaction to delete question and related data
+    const client = await pool.connect();
+    
+    try {
+      await client.query('BEGIN');
+      
+      // Delete comments on answers to this question
+      await client.query(
+        'DELETE FROM comments WHERE parent_answer_id IN (SELECT id FROM answers WHERE parent_question_id = $1)',
+        [questionId]
+      );
+      
+      // Delete comments directly on this question
+      await client.query('DELETE FROM comments WHERE parent_question_id = $1', [questionId]);
+      
+      // Delete answers to this question
+      await client.query('DELETE FROM answers WHERE parent_question_id = $1', [questionId]);
+      
+      // Delete the question
+      await client.query('DELETE FROM questions WHERE id = $1', [questionId]);
+      
+      await client.query('COMMIT');
+      
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: 'Question and all associated content deleted successfully' })
+      };
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.error('Error deleting question:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: 'Internal server error' })
+    };
+  }
+};

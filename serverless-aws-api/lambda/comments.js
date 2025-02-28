@@ -145,3 +145,40 @@ exports.createComment = async (event) => {
     };
   }
 };
+
+// DELETE /comments/{id} - Delete a comment by ID
+exports.deleteComment = async (event) => {
+  try {
+    const commentId = parseInt(event.pathParameters.id);
+    
+    if (isNaN(commentId)) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ message: 'Comment ID must be a number' })
+      };
+    }
+    
+    // Check if comment exists
+    const commentExists = await query('SELECT id FROM comments WHERE id = $1', [commentId]);
+    if (commentExists.rows.length === 0) {
+      return {
+        statusCode: 404,
+        body: JSON.stringify({ message: 'Comment not found' })
+      };
+    }
+    
+    // Delete the comment
+    await query('DELETE FROM comments WHERE id = $1', [commentId]);
+    
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ message: 'Comment deleted successfully' })
+    };
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ message: 'Internal server error' })
+    };
+  }
+};

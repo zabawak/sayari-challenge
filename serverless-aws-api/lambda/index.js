@@ -23,6 +23,11 @@ exports.handler = async (event) => {
       return await users.getUserByName(event);
     }
     
+    // NEW: Delete user
+    if (resource === '/users/{name}' && httpMethod === 'DELETE') {
+      return await users.deleteUser(event);
+    }
+    
     // Questions endpoints
     if (resource === '/questions' && httpMethod === 'GET') {
       return await questions.getQuestions(event);
@@ -30,6 +35,11 @@ exports.handler = async (event) => {
     
     if (resource === '/questions' && httpMethod === 'POST') {
       return await questions.createQuestion(event);
+    }
+    
+    // NEW: Delete question
+    if (resource === '/questions/{id}' && httpMethod === 'DELETE') {
+      return await questions.deleteQuestion(event);
     }
     
     // Answers endpoints - updated to use query parameters
@@ -41,6 +51,11 @@ exports.handler = async (event) => {
       return await answers.createAnswer(event);
     }
     
+    // NEW: Delete answer
+    if (resource === '/answers/{id}' && httpMethod === 'DELETE') {
+      return await answers.deleteAnswer(event);
+    }
+    
     // Comments endpoints - updated to use query parameters
     if (resource === '/comments' && httpMethod === 'GET') {
       return await comments.getComments(event);
@@ -48,6 +63,11 @@ exports.handler = async (event) => {
     
     if (resource === '/comments' && httpMethod === 'POST') {
       return await comments.createComment(event);
+    }
+    
+    // NEW: Delete comment
+    if (resource === '/comments/{id}' && httpMethod === 'DELETE') {
+      return await comments.deleteComment(event);
     }
     
     return {
