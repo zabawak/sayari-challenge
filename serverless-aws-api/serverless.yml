@@ -11,6 +11,12 @@ provider:
     DB_NAME: ${self:custom.dbName}
     DB_USER: ${self:custom.dbUsername}
     DB_PASSWORD: ${self:custom.dbPassword}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - rds-data:ExecuteStatement
+        - rds-data:BatchExecuteStatement
+      Resource: "*"
 
 plugins:
   - serverless-localstack
@@ -68,6 +74,21 @@ custom:
               format: 'date-time'
             score:
               type: 'integer'
+      - name: 'QuestionInputModel'
+        contentType: 'application/json'
+        schema:
+          type: 'object'
+          required:
+            - title
+            - body
+            - user_name
+          properties:
+            title:
+              type: 'string'
+            body:
+              type: 'string'
+            user_name:
+              type: 'string'
       - name: 'AnswerModel'
         contentType: 'application/json'
         schema:
@@ -119,6 +140,7 @@ functions:
       - http:
           path: users
           method: get
+          cors: true
           documentation:
             summary: 'Get all users'
             description: 'Returns all registered users'
@@ -133,6 +155,7 @@ functions:
       - http:
           path: users/{name}
           method: post
+          cors: true
           documentation:
             summary: 'Create new user'
             description: 'Creates a new user with the specified name'
@@ -141,6 +164,7 @@ functions:
                 description: 'Username to create'
             methodResponses:
               - statusCode: 201
+                description: 'Successfully registered user'
                 responseModels:
                   'application/json': 'UserModel'
 
@@ -150,29 +174,40 @@ functions:
       - http:
           path: users/{name}
           method: get
+          cors: true
           documentation:
             summary: 'Get user by name'
-            description: 'Retrieves a user by their username'
+            description: 'Gets a user by name'
             pathParams:
               - name: 'name'
                 description: 'Username to look up'
             methodResponses:
               - statusCode: 200
+                description: 'Successfully returned user'
                 responseModels:
                   'application/json': 'UserModel'
 
   # Question functions
-  getAllQuestions:
+  getQuestions:
     handler: lambda/index.handler
     events:
       - http:
           path: questions
           method: get
+          cors: true
           documentation:
-            summary: 'Get all questions'
-            description: 'Returns all questions'
+            summary: 'Get questions'
+            description: 'Gets all questions with optional filtering'
+            queryParams:
+              - name: 'id'
+                description: 'Filter by question ID'
+                required: false
+              - name: 'user'
+                description: 'Filter by username'
+                required: false
             methodResponses:
               - statusCode: 200
+                description: 'Successfully returned questions'
                 responseModels:
                   'application/json': 'QuestionModel'
 
@@ -182,13 +217,15 @@ functions:
       - http:
           path: questions
           method: post
+          cors: true
           documentation:
             summary: 'Create new question'
-            description: 'Creates a new question'
+            description: 'Create new question'
             requestModels:
-              'application/json': 'QuestionModel'
+              'application/json': 'QuestionInputModel'
             methodResponses:
               - statusCode: 201
+                description: 'Successfully returned question'
                 responseModels:
                   'application/json': 'QuestionModel'
 
@@ -196,7 +233,7 @@ functions:
     handler: lambda/index.handler
     events:
       - http:
-          path: questions/{id}
+          path: questions
           method: get
           documentation:
             summary: 'Get question by ID'
@@ -209,22 +246,22 @@ functions:
                 responseModels:
                   'application/json': 'QuestionModel'
 
-  getQuestionsByUser:
-    handler: lambda/index.handler
-    events:
-      - http:
-          path: questions/{user}
-          method: get
-          documentation:
-            summary: 'Get questions by username'
-            description: 'Retrieves all questions by a specific user'
-            pathParams:
-              - name: 'user'
-                description: 'Username to filter by'
-            methodResponses:
-              - statusCode: 200
-                responseModels:
-                  'application/json': 'QuestionModel'
+  # getQuestionsByUser:
+  #   handler: lambda/index.handler
+  #   events:
+  #     - http:
+  #         path: questions/{user}
+  #         method: get
+  #         documentation:
+  #           summary: 'Get questions by username'
+  #           description: 'Retrieves all questions by a specific user'
+  #           pathParams:
+  #             - name: 'user'
+  #               description: 'Username to filter by'
+  #           methodResponses:
+  #             - statusCode: 200
+  #               responseModels:
+  #                 'application/json': 'QuestionModel'
 
   # Answer functions
   getAnswersByUser:

@@ -101,12 +101,6 @@
         "LogGroupName": "/aws/lambda/serverless-aws-api-local-createQuestion"
       }
     },
-    "GetQuestionByIdLogGroup": {
-      "Type": "AWS::Logs::LogGroup",
-      "Properties": {
-        "LogGroupName": "/aws/lambda/serverless-aws-api-local-getQuestionById"
-      }
-    },
     "GetQuestionsByUserLogGroup": {
       "Type": "AWS::Logs::LogGroup",
       "Properties": {
@@ -234,7 +228,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740694465618-2025-02-27T22:14:25.618Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -278,7 +272,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740694465618-2025-02-27T22:14:25.618Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -322,7 +316,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740694465618-2025-02-27T22:14:25.618Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -366,7 +360,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740694465618-2025-02-27T22:14:25.618Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -410,7 +404,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740694465618-2025-02-27T22:14:25.618Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -447,50 +441,6 @@
         "CreateQuestionLogGroup"
       ]
     },
-    "GetQuestionByIdLambdaFunction": {
-      "Type": "AWS::Lambda::Function",
-      "Properties": {
-        "Code": {
-          "S3Bucket": {
-            "Ref": "ServerlessDeploymentBucket"
-          },
-          "S3Key": "serverless/serverless-aws-api/local/1740694465618-2025-02-27T22:14:25.618Z/serverless-aws-api.zip"
-        },
-        "Handler": "lambda/index.handler",
-        "Runtime": "nodejs18.x",
-        "FunctionName": "serverless-aws-api-local-getQuestionById",
-        "MemorySize": 1024,
-        "Timeout": 6,
-        "Environment": {
-          "Variables": {
-            "DB_HOST": {
-              "Fn::GetAtt": [
-                "PostgresRDSInstance",
-                "Endpoint.Address"
-              ]
-            },
-            "DB_PORT": {
-              "Fn::GetAtt": [
-                "PostgresRDSInstance",
-                "Endpoint.Port"
-              ]
-            },
-            "DB_NAME": "mydbname",
-            "DB_USER": "dbadmin",
-            "DB_PASSWORD": "dbpassword"
-          }
-        },
-        "Role": {
-          "Fn::GetAtt": [
-            "IamRoleLambdaExecution",
-            "Arn"
-          ]
-        }
-      },
-      "DependsOn": [
-        "GetQuestionByIdLogGroup"
-      ]
-    },
     "GetQuestionsByUserLambdaFunction": {
       "Type": "AWS::Lambda::Function",
       "Properties": {
@@ -498,7 +448,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740694465618-2025-02-27T22:14:25.618Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -542,7 +492,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740694465618-2025-02-27T22:14:25.618Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -586,7 +536,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740694465618-2025-02-27T22:14:25.618Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -630,7 +580,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740694465618-2025-02-27T22:14:25.618Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -674,7 +624,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740694465618-2025-02-27T22:14:25.618Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -718,7 +668,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740694465618-2025-02-27T22:14:25.618Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -762,7 +712,7 @@
           "S3Bucket": {
             "Ref": "ServerlessDeploymentBucket"
           },
-          "S3Key": "serverless/serverless-aws-api/local/1740694465618-2025-02-27T22:14:25.618Z/serverless-aws-api.zip"
+          "S3Key": "serverless/serverless-aws-api/local/1740700196272-2025-02-27T23:49:56.272Z/serverless-aws-api.zip"
         },
         "Handler": "lambda/index.handler",
         "Runtime": "nodejs18.x",
@@ -845,16 +795,6 @@
       "Properties": {
         "FunctionName": {
           "Ref": "CreateQuestionLambdaFunction"
-        },
-        "CodeSha256": "S7iKSWearPTjB+c8c9omjtgMgfglsVP8wGp2jJBb7J8="
-      }
-    },
-    "GetQuestionByIdLambdaVersion35CqkkcVbm6SmjgQNHMg8t9n3mbq2U2hpRujM6XWw": {
-      "Type": "AWS::Lambda::Version",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "FunctionName": {
-          "Ref": "GetQuestionByIdLambdaFunction"
         },
         "CodeSha256": "S7iKSWearPTjB+c8c9omjtgMgfglsVP8wGp2jJBb7J8="
       }
@@ -978,18 +918,6 @@
           ]
         },
         "PathPart": "questions",
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        }
-      }
-    },
-    "ApiGatewayResourceQuestionsIdVar": {
-      "Type": "AWS::ApiGateway::Resource",
-      "Properties": {
-        "ParentId": {
-          "Ref": "ApiGatewayResourceQuestions"
-        },
-        "PathPart": "{id}",
         "RestApiId": {
           "Ref": "ApiGatewayRestApi"
         }
@@ -1315,52 +1243,6 @@
         "CreateQuestionLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayMethodQuestionsIdVarGet": {
-      "Type": "AWS::ApiGateway::Method",
-      "Properties": {
-        "HttpMethod": "GET",
-        "RequestParameters": {},
-        "ResourceId": {
-          "Ref": "ApiGatewayResourceQuestionsIdVar"
-        },
-        "RestApiId": {
-          "Ref": "ApiGatewayRestApi"
-        },
-        "ApiKeyRequired": false,
-        "AuthorizationType": "NONE",
-        "Integration": {
-          "IntegrationHttpMethod": "POST",
-          "Type": "AWS_PROXY",
-          "Uri": {
-            "Fn::Join": [
-              "",
-              [
-                "arn:",
-                {
-                  "Ref": "AWS::Partition"
-                },
-                ":apigateway:",
-                {
-                  "Ref": "AWS::Region"
-                },
-                ":lambda:path/2015-03-31/functions/",
-                {
-                  "Fn::GetAtt": [
-                    "GetQuestionByIdLambdaFunction",
-                    "Arn"
-                  ]
-                },
-                "/invocations"
-              ]
-            ]
-          }
-        },
-        "MethodResponses": []
-      },
-      "DependsOn": [
-        "GetQuestionByIdLambdaPermissionApiGateway"
-      ]
-    },
     "ApiGatewayMethodQuestionsUserVarGet": {
       "Type": "AWS::ApiGateway::Method",
       "Properties": {
@@ -1683,7 +1565,7 @@
         "GetCommentsByUserLambdaPermissionApiGateway"
       ]
     },
-    "ApiGatewayDeployment1740694451667": {
+    "ApiGatewayDeployment1740700184310": {
       "Type": "AWS::ApiGateway::Deployment",
       "Properties": {
         "RestApiId": {
@@ -1697,7 +1579,6 @@
         "ApiGatewayMethodUsersNameVarGet",
         "ApiGatewayMethodQuestionsGet",
         "ApiGatewayMethodQuestionsPost",
-        "ApiGatewayMethodQuestionsIdVarGet",
         "ApiGatewayMethodQuestionsUserVarGet",
         "ApiGatewayMethodAnswersUserVarGet",
         "ApiGatewayMethodAnswersQuestionVarGet",
@@ -1861,43 +1742,6 @@
         "FunctionName": {
           "Fn::GetAtt": [
             "CreateQuestionLambdaFunction",
-            "Arn"
-          ]
-        },
-        "Action": "lambda:InvokeFunction",
-        "Principal": "apigateway.amazonaws.com",
-        "SourceArn": {
-          "Fn::Join": [
-            "",
-            [
-              "arn:",
-              {
-                "Ref": "AWS::Partition"
-              },
-              ":execute-api:",
-              {
-                "Ref": "AWS::Region"
-              },
-              ":",
-              {
-                "Ref": "AWS::AccountId"
-              },
-              ":",
-              {
-                "Ref": "ApiGatewayRestApi"
-              },
-              "/*/*"
-            ]
-          ]
-        }
-      }
-    },
-    "GetQuestionByIdLambdaPermissionApiGateway": {
-      "Type": "AWS::Lambda::Permission",
-      "Properties": {
-        "FunctionName": {
-          "Fn::GetAtt": [
-            "GetQuestionByIdLambdaFunction",
             "Arn"
           ]
         },
@@ -2477,15 +2321,6 @@
       },
       "Export": {
         "Name": "sls-serverless-aws-api-local-CreateQuestionLambdaFunctionQualifiedArn"
-      }
-    },
-    "GetQuestionByIdLambdaFunctionQualifiedArn": {
-      "Description": "Current Lambda function version",
-      "Value": {
-        "Ref": "GetQuestionByIdLambdaVersion35CqkkcVbm6SmjgQNHMg8t9n3mbq2U2hpRujM6XWw"
-      },
-      "Export": {
-        "Name": "sls-serverless-aws-api-local-GetQuestionByIdLambdaFunctionQualifiedArn"
       }
     },
     "GetQuestionsByUserLambdaFunctionQualifiedArn": {

@@ -1,16 +1,81 @@
 const { query } = require('./db');
 
-// GET /questions - Get all questions
-exports.getAllQuestions = async (event) => {
+// Updated to handle query parameters for id and user filtering
+exports.getQuestions = async (event) => {
   try {
-    const result = await query(`
-      SELECT q.id, q.title, q.body, q.created_at, q.score, q.user_id, q.user_name,
-      COUNT(DISTINCT a.id) as answer_count 
-      FROM questions q 
-      LEFT JOIN answers a ON q.id = a.parent_question_id 
-      GROUP BY q.id
-      ORDER BY q.created_at DESC
-    `);
+    // Check for query parameters
+    const queryParams = event.queryStringParameters || {};
+    const questionId = queryParams.id ? parseInt(queryParams.id) : null;
+    const username = queryParams.user || null;
+    
+    let result;
+    
+    // Case 1: Filter by ID
+    if (questionId && !isNaN(questionId)) {
+      // Get question details
+      const questionResult = await query(`
+        SELECT q.id, q.title, q.body, q.created_at, q.score, q.user_id, q.user_name
+        FROM questions q 
+        WHERE q.id = $1
+      `, [questionId]);
+      
+      if (questionResult.rows.length === 0) {
+        return {
+          statusCode: 404,
+          body: JSON.stringify({ message: 'Question not found' })
+        };
+      }
+      
+      // Get answer count
+      const answerCountResult = await query(
+        'SELECT COUNT(*) as answer_count FROM answers WHERE parent_question_id = $1',
+        [questionId]
+      );
+      
+      // Get comments for this question
+      const commentsResult = await query(
+        'SELECT id, body, user_name, created_at FROM comments WHERE parent_question_id = $1 ORDER BY created_at ASC',
+        [questionId]
+      );
+      
+      // Combine results
+      const question = {
+        ...questionResult.rows[0],
+        answer_count: parseInt(answerCountResult.rows[0].answer_count),
+        comments: commentsResult.rows
+      };
+      
+      return {
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(question)
+      };
+    }
+    
+    // Case 2: Filter by username
+    else if (username) {
+      result = await query(`
+        SELECT q.id, q.title, q.body, q.created_at, q.score, q.user_id, q.user_name,
+        COUNT(DISTINCT a.id) as answer_count 
+        FROM questions q 
+        LEFT JOIN answers a ON q.id = a.parent_question_id
+        WHERE q.user_name = $1
+        GROUP BY q.id
+        ORDER BY q.created_at DESC
+      `, [username]);
+    }
+    
+    // Case 3: Get all questions (no filters)
+    else {
+      result = await query(`
+        SELECT q.id, q.title, q.body, q.created_at, q.score, q.user_id, q.user_name,
+        COUNT(DISTINCT a.id) as answer_count 
+        FROM questions q 
+        LEFT JOIN answers a ON q.id = a.parent_question_id 
+        GROUP BY q.id
+        ORDER BY q.created_at DESC
+      `);
+    }
     
     return {
       statusCode: 200,

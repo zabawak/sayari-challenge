@@ -8,7 +8,7 @@ exports.handler = async (event) => {
   try {
     console.log('Event:', JSON.stringify(event));
     
-    const { resource, httpMethod, pathParameters } = event;
+    const { resource, httpMethod, pathParameters, queryStringParameters } = event;
     
     // Users endpoints
     if (resource === '/users' && httpMethod === 'GET') {
@@ -23,25 +23,16 @@ exports.handler = async (event) => {
       return await users.getUserByName(event);
     }
     
-    // Questions endpoints
+    // Questions endpoints - updated to use the new handler
     if (resource === '/questions' && httpMethod === 'GET') {
-      return await questions.getAllQuestions(event);
+      return await questions.getQuestions(event);
     }
     
     if (resource === '/questions' && httpMethod === 'POST') {
       return await questions.createQuestion(event);
     }
     
-    if (resource === '/questions/{id}' && httpMethod === 'GET') {
-      return await questions.getQuestionById(event);
-    }
-    
-    if (resource === '/questions/{user}' && httpMethod === 'GET' && 
-        isNaN(parseInt(event.pathParameters.user))) {
-      return await questions.getQuestionsByUser(event);
-    }
-    
-    // Answers endpoints
+    // Answer endpoints
     if (resource === '/answers/{user}' && httpMethod === 'GET' && 
         isNaN(parseInt(event.pathParameters.user))) {
       return await answers.getAnswersByUser(event);
@@ -57,8 +48,7 @@ exports.handler = async (event) => {
     }
     
     // Comments endpoints
-    if (resource === '/comments/{parent}' && httpMethod === 'GET' && 
-        !isNaN(parseInt(event.pathParameters.parent))) {
+    if (resource === '/comments/{parent}' && httpMethod === 'GET') {
       return await comments.getCommentsByParent(event);
     }
     
@@ -66,8 +56,7 @@ exports.handler = async (event) => {
       return await comments.createComment(event);
     }
     
-    if (resource === '/comments/{user}' && httpMethod === 'GET' && 
-        isNaN(parseInt(event.pathParameters.user))) {
+    if (resource === '/comments/{user}' && httpMethod === 'GET') {
       return await comments.getCommentsByUser(event);
     }
     
