@@ -74,4 +74,4 @@ TODO:
 - A real cloud deployment & testing in-environment. 
 - Production deployment would certainly need a larger RDS instance depending on application scale.
 - Enhanced logging - add more debug logs on events. 
-- Dockerize the thing
+- Dockerize the thing & deployment to ECS/EKS
