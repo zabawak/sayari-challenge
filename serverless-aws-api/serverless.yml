@@ -131,6 +131,42 @@ custom:
             created_at:
               type: 'string'
               format: 'date-time'
+      - name: 'AnswerInputModel'
+        contentType: 'application/json'
+        schema:
+          type: 'object'
+          required:
+            - body
+            - user_name
+            - question_id
+          properties:
+            body:
+              type: 'string'
+            user_name:
+              type: 'string'
+            question_id:
+              type: 'integer'
+      - name: 'CommentInputModel'
+        contentType: 'application/json'
+        schema:
+          type: 'object'
+          required:
+            - body
+            - user_name
+            - parent_id
+            - parent_type
+          properties:
+            body:
+              type: 'string'
+            user_name:
+              type: 'string'
+            parent_id:
+              type: 'integer'
+            parent_type:
+              type: 'string'
+              enum:
+                - 'question'
+                - 'answer'
 
 functions:
   # User functions
@@ -264,37 +300,29 @@ functions:
   #                 'application/json': 'QuestionModel'
 
   # Answer functions
-  getAnswersByUser:
+  getAnswers:
     handler: lambda/index.handler
     events:
       - http:
-          path: answers/{user}
+          path: answers
           method: get
+          cors: true
           documentation:
-            summary: 'Get answers by username'
-            description: 'Retrieves all answers by a specific user'
-            pathParams:
+            summary: 'Get answers'
+            description: 'Gets all answers with optional filtering'
+            queryParams:
+              - name: 'id'
+                description: 'Filter by answer ID'
+                required: false
               - name: 'user'
-                description: 'Username to filter by'
-            methodResponses:
-              - statusCode: 200
-                responseModels:
-                  'application/json': 'AnswerModel'
-
-  getAnswersByQuestion:
-    handler: lambda/index.handler
-    events:
-      - http:
-          path: answers/{question}
-          method: get
-          documentation:
-            summary: 'Get answers by question'
-            description: 'Retrieves all answers to a specific question'
-            pathParams:
+                description: 'Filter by username'
+                required: false
               - name: 'question'
-                description: 'Question ID to filter by'
+                description: 'Filter by question ID'
+                required: false
             methodResponses:
               - statusCode: 200
+                description: 'Successfully returned answers'
                 responseModels:
                   'application/json': 'AnswerModel'
 
@@ -302,36 +330,44 @@ functions:
     handler: lambda/index.handler
     events:
       - http:
-          path: answers/{question}
+          path: answers
           method: post
+          cors: true
           documentation:
             summary: 'Create new answer'
-            description: 'Creates a new answer for a specific question'
-            pathParams:
-              - name: 'question'
-                description: 'Question ID to answer'
+            description: 'Creates a new answer'
             requestModels:
-              'application/json': 'AnswerModel'
+              'application/json': 'AnswerInputModel'
             methodResponses:
               - statusCode: 201
+                description: 'Successfully created answer'
                 responseModels:
                   'application/json': 'AnswerModel'
 
   # Comment functions
-  getCommentsByParent:
+  getComments:
     handler: lambda/index.handler
     events:
       - http:
-          path: comments/{parent}
+          path: comments
           method: get
+          cors: true
           documentation:
-            summary: 'Get comments by parent'
-            description: 'Retrieves all comments for a question or answer'
-            pathParams:
+            summary: 'Get comments'
+            description: 'Gets all comments with optional filtering'
+            queryParams:
+              - name: 'id'
+                description: 'Filter by comment ID'
+                required: false
+              - name: 'user'
+                description: 'Filter by username'
+                required: false
               - name: 'parent'
-                description: 'Parent ID (question or answer)'
+                description: 'Filter by parent ID (question or answer)'
+                required: false
             methodResponses:
               - statusCode: 200
+                description: 'Successfully returned comments'
                 responseModels:
                   'application/json': 'CommentModel'
 
@@ -339,35 +375,17 @@ functions:
     handler: lambda/index.handler
     events:
       - http:
-          path: comments/{parent}
+          path: comments
           method: post
+          cors: true
           documentation:
             summary: 'Create new comment'
-            description: 'Creates a new comment for a question or answer'
-            pathParams:
-              - name: 'parent'
-                description: 'Parent ID (question or answer)'
+            description: 'Creates a new comment'
             requestModels:
-              'application/json': 'CommentModel'
+              'application/json': 'CommentInputModel'
             methodResponses:
               - statusCode: 201
-                responseModels:
-                  'application/json': 'CommentModel'
-
-  getCommentsByUser:
-    handler: lambda/index.handler
-    events:
-      - http:
-          path: comments/{user}
-          method: get
-          documentation:
-            summary: 'Get comments by user'
-            description: 'Retrieves all comments by a specific user'
-            pathParams:
-              - name: 'user'
-                description: 'Username to filter by'
-            methodResponses:
-              - statusCode: 200
+                description: 'Successfully posted comment'
                 responseModels:
                   'application/json': 'CommentModel'
 

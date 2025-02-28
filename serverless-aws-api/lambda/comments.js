@@ -1,43 +1,68 @@
 const { query } = require('./db');
 
-// GET /comments/{parent} - Get all comments for a parent (question or answer)
-exports.getCommentsByParent = async (event) => {
+// Updated to handle query parameters
+exports.getComments = async (event) => {
   try {
-    const parentId = parseInt(event.pathParameters.parent);
+    // Check for query parameters
+    const queryParams = event.queryStringParameters || {};
+    const commentId = queryParams.id ? parseInt(queryParams.id) : null;
+    const username = queryParams.user || null;
+    const parentId = queryParams.parent ? parseInt(queryParams.parent) : null;
     
-    if (isNaN(parentId)) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ message: 'Invalid parent ID' })
-      };
+    let sql;
+    let params = [];
+    let paramIndex = 1;
+    let whereClause = [];
+    
+    // Base query
+    sql = `
+      SELECT c.id, c.body, c.user_id, c.user_name, c.parent_question_id, c.parent_answer_id, c.created_at,
+      CASE 
+        WHEN c.parent_question_id IS NOT NULL THEN 'question'
+        WHEN c.parent_answer_id IS NOT NULL THEN 'answer'
+      END as parent_type,
+      CASE 
+        WHEN c.parent_question_id IS NOT NULL THEN 
+          (SELECT title FROM questions WHERE id = c.parent_question_id)
+        WHEN c.parent_answer_id IS NOT NULL THEN 
+          (SELECT title FROM questions 
+            WHERE id = (SELECT parent_question_id FROM answers WHERE id = c.parent_answer_id))
+      END as parent_title
+      FROM comments c
+    `;
+    
+    // Add filters based on provided query parameters
+    if (commentId && !isNaN(commentId)) {
+      whereClause.push(`c.id = $${paramIndex}`);
+      params.push(commentId);
+      paramIndex++;
     }
     
-    // Determine if parent is question or answer
-    const questionExists = await query('SELECT id FROM questions WHERE id = $1', [parentId]);
-    const answerExists = await query('SELECT id FROM answers WHERE id = $1', [parentId]);
-    
-    let comments;
-    if (questionExists.rows.length > 0) {
-      comments = await query(
-        'SELECT id, body, user_name, created_at FROM comments WHERE parent_question_id = $1 ORDER BY created_at ASC',
-        [parentId]
-      );
-    } else if (answerExists.rows.length > 0) {
-      comments = await query(
-        'SELECT id, body, user_name, created_at FROM comments WHERE parent_answer_id = $1 ORDER BY created_at ASC',
-        [parentId]
-      );
-    } else {
-      return {
-        statusCode: 404,
-        body: JSON.stringify({ message: 'Parent not found' })
-      };
+    if (username) {
+      whereClause.push(`c.user_name = $${paramIndex}`);
+      params.push(username);
+      paramIndex++;
     }
+    
+    if (parentId && !isNaN(parentId)) {
+      whereClause.push(`(c.parent_question_id = $${paramIndex} OR c.parent_answer_id = $${paramIndex})`);
+      params.push(parentId);
+      paramIndex++;
+    }
+    
+    // Add WHERE clause if any filters exist
+    if (whereClause.length > 0) {
+      sql += ` WHERE ${whereClause.join(' AND ')}`;
+    }
+    
+    sql += ` ORDER BY c.created_at DESC`;
+    
+    const result = await query(sql, params);
     
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(comments.rows)
+      body: JSON.stringify(result.rows)
     };
   } catch (error) {
     console.error('Error fetching comments:', error);
@@ -48,24 +73,16 @@ exports.getCommentsByParent = async (event) => {
   }
 };
 
-// POST /comments/{parent} - Add a comment to a parent (question or answer)
+// Create comment - updated to use request body with parent_id and parent_type
 exports.createComment = async (event) => {
   try {
-    const parentId = parseInt(event.pathParameters.parent);
-    const { body, user_name, parent_type } = JSON.parse(event.body);
-    
-    if (isNaN(parentId)) {
-      return {
-        statusCode: 400,
-        body: JSON.stringify({ message: 'Invalid parent ID' })
-      };
-    }
+    const { body, user_name, parent_id, parent_type } = JSON.parse(event.body);
     
     // Validate required fields
-    if (!body || !user_name || !parent_type) {
+    if (!body || !user_name || !parent_id || !parent_type) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ message: 'Missing required fields: body, user_name, or parent_type' })
+        body: JSON.stringify({ message: 'Missing required fields: body, user_name, parent_id, or parent_type' })
       };
     }
     
@@ -80,9 +97,9 @@ exports.createComment = async (event) => {
     // Check if parent exists
     let parentExists;
     if (parent_type === 'question') {
-      parentExists = await query('SELECT id FROM questions WHERE id = $1', [parentId]);
+      parentExists = await query('SELECT id FROM questions WHERE id = $1', [parent_id]);
     } else {
-      parentExists = await query('SELECT id FROM answers WHERE id = $1', [parentId]);
+      parentExists = await query('SELECT id FROM answers WHERE id = $1', [parent_id]);
     }
     
     if (parentExists.rows.length === 0) {
@@ -103,23 +120,16 @@ exports.createComment = async (event) => {
     
     const userId = userResult.rows[0].id;
     
-    // Build parameters for the query
-    const params = {
-      body, 
-      user_id: userId, 
-      user_name
-    };
-    
     let result;
     if (parent_type === 'question') {
       result = await query(
         'INSERT INTO comments (body, user_id, user_name, parent_question_id) VALUES ($1, $2, $3, $4) RETURNING *',
-        [body, userId, user_name, parentId]
+        [body, userId, user_name, parent_id]
       );
     } else {
       result = await query(
         'INSERT INTO comments (body, user_id, user_name, parent_answer_id) VALUES ($1, $2, $3, $4) RETURNING *',
-        [body, userId, user_name, parentId]
+        [body, userId, user_name, parent_id]
       );
     }
     
@@ -129,49 +139,6 @@ exports.createComment = async (event) => {
     };
   } catch (error) {
     console.error('Error creating comment:', error);
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ message: 'Internal server error' })
-    };
-  }
-};
-
-// GET /comments/{user} - Get all comments by username
-exports.getCommentsByUser = async (event) => {
-  try {
-    const user_name = event.pathParameters.user;
-    
-    const result = await query(`
-      SELECT 
-        c.id, 
-        c.body, 
-        c.user_name, 
-        c.created_at,
-        c.parent_question_id,
-        c.parent_answer_id,
-        CASE 
-          WHEN c.parent_question_id IS NOT NULL THEN 'question'
-          WHEN c.parent_answer_id IS NOT NULL THEN 'answer'
-        END as parent_type,
-        CASE 
-          WHEN c.parent_question_id IS NOT NULL THEN 
-            (SELECT title FROM questions WHERE id = c.parent_question_id)
-          WHEN c.parent_answer_id IS NOT NULL THEN 
-            (SELECT title FROM questions 
-             WHERE id = (SELECT parent_question_id FROM answers WHERE id = c.parent_answer_id))
-        END as parent_title
-      FROM comments c
-      WHERE c.user_name = $1
-      ORDER BY c.created_at DESC
-    `, [user_name]);
-    
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(result.rows)
-    };
-  } catch (error) {
-    console.error('Error fetching comments by user:', error);
     return {
       statusCode: 500,
       body: JSON.stringify({ message: 'Internal server error' })
